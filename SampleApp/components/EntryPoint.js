@@ -21,14 +21,14 @@ function EntryPoint(props) {
         if(passcodeCreated) { 
           history.push('/pin/entry')
         } else {
-          throw new Error("Error");
-          history.push('/start')
+          //throw new Error("Error");
+          //history.push('/start')
         }
       } catch (e) {
 
         errors.setVisible(true);
         errors.setText("Error!");
-        
+
         console.error('Error During Startup:', e)
       }
     }

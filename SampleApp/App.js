@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, NativeModules} from 'react';
 import {
   Text,
   View
@@ -10,12 +10,16 @@ import {
   useHistory,
   useLocation 
 } from 'react-router-native'
+import Agent from 'aries-mobileagent-react-native'
 
 import Notifications from './components/Notifications.js'
 import Errors from './components/Errors.js'
 import EntryPoint from './components/EntryPoint.js'
 
 
+
+//Libindy Native Bridging
+const {Indy} = NativeModules
 
 
 
