@@ -1,5 +1,5 @@
-# aries-mobileagent-react-native
-Aries Mobile Agent React Native (AMA-RN) - An Aries Mobile Agent written to create an interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features. Currently built for Android with iOS support on the roadmap.
+# Aries Mobile Agent React Native (AMA-RN)
+An Aries Mobile Agent written to create an interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features. Currently built for Android with iOS support planned.
 
 ## App Requirements
 
@@ -25,9 +25,9 @@ def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3/*, "x86_64": 4*/]
 Either install a compiled package or use a git submodule for local development:
 
 ### Install
-Within your local React Native app, run:
+Within your local React Native app, run with your target version:
 ```
-npm install aries-mobileagent-react-native
+npm install "git@github.com:Indicio-tech/aries-mobileagent-react-native.git#v0.x.x"
 ```
 
 ### Local Library Development
