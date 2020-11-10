@@ -10,7 +10,7 @@ AMA-RN targets Android API 29.0.3, with plans to support API 30 soon. If you nee
 android:requestLegacyExternalStorage="true"
 ```
 
-Currently AMA-RN does not support the x86_64 architecture, however this should be addressed soon. You can remove this from your Android build process by specifying in your build.gradle:
+Currently AMA-RN does not support the x86_64 architecture, however this will be addressed soon. You can remove this from your Android build process by specifying in your build.gradle:
 ```
 include "armeabi-v7a", "x86", "arm64-v8a"/*, "x86_64" */
 
@@ -25,13 +25,13 @@ def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3/*, "x86_64": 4*/]
 Either install a compiled package or use a git submodule for local development:
 
 ### Install
-Within your local React Native app, run with your target version:
+Within your React Native app, run with your target version:
 ```
 npm install "git@github.com:Indicio-tech/aries-mobileagent-react-native.git#v0.x.x"
 ```
 
 ### Local Library Development
-We suggest using git submodules for local development, due to known [metro symlink issues](https://github.com/facebook/metro/issues/1) that prevent the usage of local npm dependecies or `npm link`.
+We suggest using git submodules for local development, due to known [metro symlink issues](https://github.com/facebook/metro/issues/1) that prevent the usage of local npm dependecies or `npm link`. You may be able to utilize a [custom metro configuration](https://github.com/facebook/metro/issues/447).
 
 Within your local React Native app, run:
 ```
@@ -56,6 +56,12 @@ npm install aries-mobileagent-react-native
 ```
 
 You should now be able to develop your app and AMA-RN locally.
+
+### Dependencies
+AMA-RN has two peer dependencies that you may need to install:
+```
+npm install react-native-fs react-native-get-random-values
+```
 
 
 ## Usage
