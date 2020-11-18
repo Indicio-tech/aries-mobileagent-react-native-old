@@ -13,19 +13,18 @@ global.Buffer = global.Buffer || require('buffer').Buffer
 //Libindy Native Bridging
 const {Indy} = NativeModules
 
-interface AgentInterface {
-}
-
-// class Agent implements AgentInterface {
-// 	private id: string;
-// 	constructor(id:string) {		
-// 		console.log("Testing!", RNFS.DocumentDirectoryPath);
-		
-// 		console.log("Howdy", id, yo);
-// 		this.id = id;
-// 	}
+import AgentBuilder, {DefaultAgentDirector} from './agent'
+//import {AgentInterface} from './agent'
+// let testAgent = new Agent.DefaultAgentDirector();
+// console.log(Agent, testAgent)
+// console.log(typeof testAgent);
+// function isAgent(agent: AgentInterface): agent is AgentInterface{
+//     return (agent as AgentInterface).id !== undefined;
 // }
-import Agent from './test'
+// console.log(isAgent(testAgent));
 
-
-export default Agent
+const Aries = {
+    AgentBuilder,
+    DefaultAgentDirector
+}
+export default Aries
