@@ -1,117 +1,136 @@
+import {Record, Literal, Static, String, Union} from 'runtypes'
+
+import {UUID} from './types/uuid'
 import * as AgentErrors from './errors'
 
-export interface MediatorConfig {
-    invite: string,
-    publicKey: string,
-    endpoint: string
-}
 
-export interface LedgerConfig {
-    name: string
-}
-function isLedgerConfig(param:any): param is LedgerConfig {
-    if(typeof param.name === "string"){
-        return false
-    }
-    return true
-}
+const MediatorConfig = Record({
+    invite: String,
+    publicKey: String,
+    endpoint: String
+})
+export type MediatorConfig = Static<typeof MediatorConfig>
 
 
-export enum StorageType {
-    LibIndyNonSecrets = "LibIndyNonSecrets",
-    //CouchDB = "CouchDB"
-}
-type StorageTypeStrings = keyof typeof StorageType
-function isStorageType(param:any): param is StorageType {
-    return param in StorageType
-}
-function isStorageTypeGuard(param:any){
-    if(!isStorageType(param)){
-        throw new AgentErrors.InvalidParameter(Object.keys(param).toString(), param)
-    }
-}
+const LedgerConfig = Record({
+    name: String
+})
+export type LedgerConfig = Static<typeof LedgerConfig>
 
 
-function isString(param:any): param is string {
-    return typeof param === 'string'
-}
-function isStringGuard(param:any){
-    if(!isString(param)){
-        throw new AgentErrors.TypeError("string", typeof param)
-    }
-}
+const StorageType = Union(
+    Literal('LibIndyNonSecrets'),
+    //Literal('CouchDB')
+)
+export type StorageType = Static<typeof StorageType>
+
+
+const WalletName = String
+export type WalletName = Static<typeof WalletName>
+
 
 
 export interface AgentInterface {
-    walletName:string,
-    // storageType:storageType,
-    // ledgerConfig:LedgerConfig,
-    // mediatorConfig:MediatorConfig,
+    walletName:WalletName,
+    storageType:StorageType,
+    ledgerConfig:LedgerConfig,
+    mediatorConfig:MediatorConfig,
 }
 
 export class Agent implements AgentInterface {
-    walletName:string
-    // storageType:storageType
-    // ledgerConfig:LedgerConfig
-    // mediatorConfig:MediatorConfig
+    walletName:WalletName
+    storageType:StorageType
+    ledgerConfig:LedgerConfig
+    mediatorConfig:MediatorConfig
     #walletPassword:string
 	constructor(builder:AgentBuilder) {
         console.log("Creating Agent")
 
-        //Validate Builder Arguments
+        //Validate non-optional Builder arguments
         console.log("Validating Arguments")
-        if(!isString(builder._walletName)){
-            throw new AgentErrors.TypeError("string", typeof builder._walletName)
+        if(!LedgerConfig.guard(builder._ledgerConfig)){
+            throw new AgentErrors.ValidationError("ledgerConfig")
+        }
+        if(!WalletName.guard(builder._walletName)){
+            throw new AgentErrors.ValidationError("walletName")
+        }
+        if(!StorageType.guard(builder._storageType)){
+            throw new AgentErrors.ValidationError("storageType")
+        }
+        if(!MediatorConfig.guard(builder._mediatorConfig)){
+            throw new AgentErrors.ValidationError("mediatorConfig")
         }
 
         this.walletName = builder._walletName
-        // this.storageType = builder._storageType
-        // this.ledgerConfig = builder._ledgerConfig
-        // this.mediatorConfig = builder._mediatorConfig
+        this.storageType = builder._storageType
+        this.ledgerConfig = builder._ledgerConfig
+        this.mediatorConfig = builder._mediatorConfig
         this.#walletPassword = "3446";
 	}
 }
 
 
 export interface AgentBuilderInterface {
-    setWalletName(walletName:string):AgentBuilder,
-    setStorageConfig(storageType:StorageTypeStrings):AgentBuilder,
+    setWalletName(walletName:WalletName):AgentBuilder,
+    setStorageType(storageType:StorageType):AgentBuilder,
+    setMediatorConfig(mediatorConfig:MediatorConfig):AgentBuilder,
 }
 
 //Agent Builder Constructor
 export default class AgentBuilder implements AgentBuilderInterface {
-    _walletName:string | null = null
-    _storageType:StorageTypeStrings | null = null
+    _walletName:WalletName | null = null
+    _storageType:StorageType | null = null
     _ledgerConfig:LedgerConfig | null = null
     _mediatorConfig:MediatorConfig | null = null
     _walletPassword:string | null = null
 
     constructor() {}
 
-    setWalletName(walletName:string):AgentBuilder {
-        isStringGuard(walletName)
+    setWalletName(walletName:WalletName):AgentBuilder {
+        //Validation
+        try{
+            WalletName.check(walletName)
+        } catch(e){
+            throw new AgentErrors.ValidationError("walletName", e.message)
+        }
 
         this._walletName = walletName
         return this
     }
 
-    setStorageConfig(storageType:StorageTypeStrings):AgentBuilder {
-        isStringGuard(storageType)
-        isStorageTypeGuard(storageType)
+    setStorageType(storageType:StorageType):AgentBuilder {
+        //Validation
+        try{
+            StorageType.check(storageType)
+        } catch(e){
+            throw new AgentErrors.ValidationError("storageType", e.message)
+        }
         
         this._storageType = storageType
         return this
     }
 
     setLedgerConfig(ledgerConfig:LedgerConfig):AgentBuilder {
-        console.log(ledgerConfig)
-        console.log(ledgerConfig)
-        // if(!isLedgerConfig(ledgerConfig))
-        // {
-        //     throw new AgentErrors.TypeError("string", typeof storageType)
-        // }
+        //Validation
+        try{
+            LedgerConfig.check(ledgerConfig)
+        } catch(e){
+            throw new AgentErrors.ValidationError("ledgerConfig", e.message)
+        }
         
-        // this._storageType = storageType
+        this._ledgerConfig = ledgerConfig
+        return this
+    }
+
+    setMediatorConfig(mediatorConfig:MediatorConfig):AgentBuilder {
+        //Validation
+        try{
+            MediatorConfig.check(mediatorConfig)
+        } catch(e){
+            throw new AgentErrors.ValidationError("mediatorConfig", e.message)
+        }
+        
+        this._mediatorConfig = mediatorConfig
         return this
     }
 
