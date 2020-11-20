@@ -31,17 +31,13 @@ export type WalletName = Static<typeof WalletName>
 
 
 export interface AgentInterface {
-    walletName:WalletName,
-    storageType:StorageType,
-    ledgerConfig:LedgerConfig,
-    mediatorConfig:MediatorConfig,
 }
 
 export class Agent implements AgentInterface {
-    walletName:WalletName
-    storageType:StorageType
-    ledgerConfig:LedgerConfig
-    mediatorConfig:MediatorConfig
+    #walletName:WalletName
+    #storageType:StorageType
+    #ledgerConfig:LedgerConfig
+    #mediatorConfig:MediatorConfig
     #walletPassword:string
 	constructor(builder:AgentBuilder) {
         console.log("Creating Agent")
@@ -61,31 +57,66 @@ export class Agent implements AgentInterface {
             throw new AgentErrors.ValidationError("mediatorConfig")
         }
 
-        this.walletName = builder._walletName
-        this.storageType = builder._storageType
-        this.ledgerConfig = builder._ledgerConfig
-        this.mediatorConfig = builder._mediatorConfig
+        this.#walletName = builder._walletName
+        this.#storageType = builder._storageType
+        this.#ledgerConfig = builder._ledgerConfig
+        this.#mediatorConfig = builder._mediatorConfig
         this.#walletPassword = "3446";
-	}
+    }
+    
+
+    /**
+     * Gets the Agent's wallet name
+     * @returns WalletName
+     */
+    getWalletName():WalletName{
+        return this.#walletName
+    }
+    
+
+    /**
+     * Gets the Agent's storage type
+     * @returns StorageType
+     */
+    getStorageType():StorageType{
+        return this.#storageType
+    }
 }
+
+
 
 
 export interface AgentBuilderInterface {
     setWalletName(walletName:WalletName):AgentBuilder,
     setStorageType(storageType:StorageType):AgentBuilder,
+    setLedgerConfig(ledgerConfig:LedgerConfig):AgentBuilder,
     setMediatorConfig(mediatorConfig:MediatorConfig):AgentBuilder,
+    build():Agent
 }
 
-//Agent Builder Constructor
+/**
+ * Agent Builder - A Builder Class to create an Agent
+ * @interface AgentBuilderInterface
+ */
 export default class AgentBuilder implements AgentBuilderInterface {
     _walletName:WalletName | null = null
     _storageType:StorageType | null = null
     _ledgerConfig:LedgerConfig | null = null
     _mediatorConfig:MediatorConfig | null = null
     _walletPassword:string | null = null
-
+    
+    /**
+     * Agent Builder - An instance of a Agent Builder Class to create an Agent
+     * @interface AgentBuilderInterface
+     */
     constructor() {}
 
+
+    /**
+     * Sets the name of the Agent's wallet (Suggested to use a UUID)
+     * @param walletName Name of the wallet 
+     * @returns AgentBuilder
+     */
     setWalletName(walletName:WalletName):AgentBuilder {
         //Validation
         try{
@@ -98,6 +129,12 @@ export default class AgentBuilder implements AgentBuilderInterface {
         return this
     }
 
+
+    /**
+     * Sets the storage type of the Agent's wallet
+     * @param storageType The type of storage implementation
+     * @returns AgentBuilder
+     */
     setStorageType(storageType:StorageType):AgentBuilder {
         //Validation
         try{
@@ -109,7 +146,13 @@ export default class AgentBuilder implements AgentBuilderInterface {
         this._storageType = storageType
         return this
     }
+    
 
+    /**
+     * Sets the ledger configuration of the Agent
+     * @param ledgerConfig A ledger configuration
+     * @returns AgentBuilder
+     */
     setLedgerConfig(ledgerConfig:LedgerConfig):AgentBuilder {
         //Validation
         try{
@@ -122,6 +165,12 @@ export default class AgentBuilder implements AgentBuilderInterface {
         return this
     }
 
+
+    /**
+     * Sets the mediator configuration of the Agent
+     * @param mediatorConfig A mediator configuration
+     * @returns AgentBuilder
+     */
     setMediatorConfig(mediatorConfig:MediatorConfig):AgentBuilder {
         //Validation
         try{
@@ -134,6 +183,11 @@ export default class AgentBuilder implements AgentBuilderInterface {
         return this
     }
 
+
+    /**
+     * Builds the Agent and returns the generated Agent instance
+     * @returns Agent
+     */
     build() {
         return new Agent(this)
     }
