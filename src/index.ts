@@ -13,7 +13,7 @@ global.Buffer = global.Buffer || require('buffer').Buffer
 //Libindy Native Bridging
 const {Indy} = NativeModules
 
-import AgentBuilder, {DefaultAgentDirector} from './agent'
+import {AgentBuilder, DefaultAgentDirector} from './agent'
 
 const Aries = {
     AgentBuilder: AgentBuilder,

@@ -1,7 +1,14 @@
 import {Record, Literal, Static, String, Union} from 'runtypes'
 
-import {UUID} from './types/uuid'
-import * as AgentErrors from './errors'
+import {UUID} from '../types/uuid'
+import * as AgentErrors from '../errors'
+
+
+const BuildMode = Union(
+    Literal('create'),
+    Literal('open')
+)
+export type BuildMode = Static<typeof BuildMode>
 
 
 const MediatorConfig = Record({
@@ -31,39 +38,92 @@ export type WalletName = Static<typeof WalletName>
 
 
 export interface AgentInterface {
+    getWalletName():WalletName
 }
 
 export class Agent implements AgentInterface {
     #walletName:WalletName
-    #storageType:StorageType
-    #ledgerConfig:LedgerConfig
-    #mediatorConfig:MediatorConfig
     #walletPassword:string
-	constructor(builder:AgentBuilder) {
-        console.log("Creating Agent")
+    #storageType:StorageType
+    #ledgerConfig:LedgerConfig | null = null
+    #mediatorConfig:MediatorConfig | null = null
 
-        //Validate non-optional Builder arguments
-        console.log("Validating Arguments")
-        if(!LedgerConfig.guard(builder._ledgerConfig)){
-            throw new AgentErrors.ValidationError("ledgerConfig")
+	constructor(builder:AgentBuilder) {
+        console.log("Constructing Agent")
+
+        //Validate Builder arguments for authentication/Agent opening
+        if(!BuildMode.guard(builder._buildMode)){
+            throw new AgentErrors.ValidationError("buildMode")
         }
+        let buildMode = builder._buildMode
+
         if(!WalletName.guard(builder._walletName)){
             throw new AgentErrors.ValidationError("walletName")
         }
-        if(!StorageType.guard(builder._storageType)){
-            throw new AgentErrors.ValidationError("storageType")
-        }
-        if(!MediatorConfig.guard(builder._mediatorConfig)){
-            throw new AgentErrors.ValidationError("mediatorConfig")
-        }
 
         this.#walletName = builder._walletName
-        this.#storageType = builder._storageType
-        this.#ledgerConfig = builder._ledgerConfig
-        this.#mediatorConfig = builder._mediatorConfig
         this.#walletPassword = "3446";
+
+
+        console.log(`Agent Build Mode ${buildMode}`)
+        
+        if(buildMode === 'create'){
+
+            //Validate non-optional Builder arguments
+            console.log("Validating Creation Arguments")
+
+            if(!LedgerConfig.guard(builder._ledgerConfig)){
+                throw new AgentErrors.ValidationError("ledgerConfig")
+            }
+            if(!StorageType.guard(builder._storageType)){
+                throw new AgentErrors.ValidationError("storageType")
+            }
+            if(!MediatorConfig.guard(builder._mediatorConfig)){
+                throw new AgentErrors.ValidationError("mediatorConfig")
+            }
+
+            this.#storageType = builder._storageType
+            this.#ledgerConfig = builder._ledgerConfig
+            this.#mediatorConfig = builder._mediatorConfig
+
+        }
+        else if(buildMode === 'open'){
+            if(!LedgerConfig.guard(builder._ledgerConfig)){
+                throw new AgentErrors.ValidationError("ledgerConfig")
+            }
+            if(!StorageType.guard(builder._storageType)){
+                throw new AgentErrors.ValidationError("storageType")
+            }
+            if(!MediatorConfig.guard(builder._mediatorConfig)){
+                throw new AgentErrors.ValidationError("mediatorConfig")
+            }
+
+            this.#storageType = builder._storageType
+            this.#ledgerConfig = builder._ledgerConfig
+            this.#mediatorConfig = builder._mediatorConfig
+        }
+        else{
+            throw new AgentErrors.Error(0, "Unidentified Build Mode")
+        }
+
+        
+
+
+        //Authenticate Wallet
+
+
+        
+        
+
+        
+
+
+        
+
+        //Open Wallet
     }
     
+
 
     /**
      * Gets the Agent's wallet name
@@ -86,6 +146,10 @@ export class Agent implements AgentInterface {
 
 
 
+
+
+
+
 export interface AgentBuilderInterface {
     setWalletName(walletName:WalletName):AgentBuilder,
     setStorageType(storageType:StorageType):AgentBuilder,
@@ -99,6 +163,7 @@ export interface AgentBuilderInterface {
  * @interface AgentBuilderInterface
  */
 export default class AgentBuilder implements AgentBuilderInterface {
+    _buildMode:BuildMode | null = null
     _walletName:WalletName | null = null
     _storageType:StorageType | null = null
     _ledgerConfig:LedgerConfig | null = null
@@ -185,10 +250,28 @@ export default class AgentBuilder implements AgentBuilderInterface {
 
 
     /**
+     * Sets AgentBuilder mode, such as create or open
+     * @param buildMode The build mode to use
+     * @returns AgentBuilder
+     */
+    setBuildMode(buildMode:BuildMode):AgentBuilder {
+        //Validation
+        try{
+            BuildMode.check(buildMode)
+        } catch(e){
+            throw new AgentErrors.ValidationError("buildMode", e.message)
+        }
+        
+        this._buildMode = buildMode
+        return this
+    }
+
+
+    /**
      * Builds the Agent and returns the generated Agent instance
      * @returns Agent
      */
-    build() {
+    build():Agent {
         return new Agent(this)
     }
 }
