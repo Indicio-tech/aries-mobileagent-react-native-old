@@ -1,6 +1,8 @@
-import AgentBuilder, {DefaultAgentDirector} from './agentBuilder'
+import AgentBuilder, {AgentLoader, AgentDirector} from './agentBuilder'
+import Wallet from '../walletInterface'
 
 export {
     AgentBuilder,
-    DefaultAgentDirector
+    AgentLoader,
+    AgentDirector
 }

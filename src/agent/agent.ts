@@ -1,9 +1,19 @@
-import {Record, Literal, Static, String, Union} from 'runtypes'
+import {Record, Static, String, Undefined} from 'runtypes'
 
 import {UUID} from '../types/uuid'
+import {StorageType} from '../walletInterface'
 
 import * as AgentErrors from '../errors'
 import AgentBuilder from './agentBuilder'
+
+
+export const WalletName = String
+export type WalletName = Static<typeof WalletName>
+
+
+export const WalletPassword = String
+export type WalletPassword = Static<typeof WalletPassword>
+
 
 export const MediatorConfig = Record({
     invite: String,
@@ -19,15 +29,16 @@ export const LedgerConfig = Record({
 export type LedgerConfig = Static<typeof LedgerConfig>
 
 
-export const StorageType = Union(
-    Literal('LibIndyNonSecrets'),
-    //Literal('CouchDB')
-)
-export type StorageType = Static<typeof StorageType>
 
+export const AgentConfig = Record({
+    walletName:WalletName,
+    walletPassword:WalletPassword,
+    storageType:StorageType,
+    mediatorConfig:MediatorConfig.Or(Undefined),
+    ledgerConfig:LedgerConfig.Or(Undefined)
+})
+export type AgentConfig = Static<typeof AgentConfig>
 
-export const WalletName = String
-export type WalletName = Static<typeof WalletName>
 
 
 
@@ -35,9 +46,9 @@ export interface AgentInterface {
     getWalletName():WalletName
 }
 
-export class Agent implements AgentInterface {
+export default class Agent implements AgentInterface {
     #walletName:WalletName
-    #walletPassword:string
+    #walletPassword:WalletPassword
     #storageType:StorageType
     #ledgerConfig:LedgerConfig | null = null
     #mediatorConfig:MediatorConfig | null = null
@@ -46,19 +57,24 @@ export class Agent implements AgentInterface {
         console.log("Constructing Agent")
 
         
-        //Validate non-optional Builder arguments
         console.log("Validating Builder Arguments")
 
+        //Validate non-optional Builder arguments
         if(!WalletName.guard(builder._walletName)){
             throw new AgentErrors.ValidationError("walletName")
         }
-        if(!LedgerConfig.guard(builder._ledgerConfig)){
-            throw new AgentErrors.ValidationError("ledgerConfig")
+        if(!WalletPassword.guard(builder._walletPassword)){
+            throw new AgentErrors.ValidationError("walletPassword")
         }
         if(!StorageType.guard(builder._storageType)){
             throw new AgentErrors.ValidationError("storageType")
         }
-        if(!MediatorConfig.guard(builder._mediatorConfig)){
+
+        //Validate optional Builder Arguments
+        if(!LedgerConfig.guard(builder._ledgerConfig) && typeof builder._ledgerConfig !== 'undefined'){
+            throw new AgentErrors.ValidationError("ledgerConfig")
+        }
+        if(!MediatorConfig.guard(builder._mediatorConfig) && typeof builder._mediatorConfig !== 'undefined'){
             throw new AgentErrors.ValidationError("mediatorConfig")
         }
 
