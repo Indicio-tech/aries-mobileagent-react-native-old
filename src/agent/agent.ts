@@ -1,17 +1,11 @@
 import {Record, Literal, Static, String, Union} from 'runtypes'
 
 import {UUID} from '../types/uuid'
+
 import * as AgentErrors from '../errors'
+import AgentBuilder from './agentBuilder'
 
-
-const BuildMode = Union(
-    Literal('create'),
-    Literal('open')
-)
-export type BuildMode = Static<typeof BuildMode>
-
-
-const MediatorConfig = Record({
+export const MediatorConfig = Record({
     invite: String,
     publicKey: String,
     endpoint: String
@@ -19,20 +13,20 @@ const MediatorConfig = Record({
 export type MediatorConfig = Static<typeof MediatorConfig>
 
 
-const LedgerConfig = Record({
+export const LedgerConfig = Record({
     name: String
 })
 export type LedgerConfig = Static<typeof LedgerConfig>
 
 
-const StorageType = Union(
+export const StorageType = Union(
     Literal('LibIndyNonSecrets'),
     //Literal('CouchDB')
 )
 export type StorageType = Static<typeof StorageType>
 
 
-const WalletName = String
+export const WalletName = String
 export type WalletName = Static<typeof WalletName>
 
 
@@ -51,74 +45,34 @@ export class Agent implements AgentInterface {
 	constructor(builder:AgentBuilder) {
         console.log("Constructing Agent")
 
-        //Validate Builder arguments for authentication/Agent opening
-        if(!BuildMode.guard(builder._buildMode)){
-            throw new AgentErrors.ValidationError("buildMode")
-        }
-        let buildMode = builder._buildMode
+        
+        //Validate non-optional Builder arguments
+        console.log("Validating Builder Arguments")
 
         if(!WalletName.guard(builder._walletName)){
             throw new AgentErrors.ValidationError("walletName")
         }
+        if(!LedgerConfig.guard(builder._ledgerConfig)){
+            throw new AgentErrors.ValidationError("ledgerConfig")
+        }
+        if(!StorageType.guard(builder._storageType)){
+            throw new AgentErrors.ValidationError("storageType")
+        }
+        if(!MediatorConfig.guard(builder._mediatorConfig)){
+            throw new AgentErrors.ValidationError("mediatorConfig")
+        }
+
 
         this.#walletName = builder._walletName
         this.#walletPassword = "3446";
-
-
-        console.log(`Agent Build Mode ${buildMode}`)
-        
-        if(buildMode === 'create'){
-
-            //Validate non-optional Builder arguments
-            console.log("Validating Creation Arguments")
-
-            if(!LedgerConfig.guard(builder._ledgerConfig)){
-                throw new AgentErrors.ValidationError("ledgerConfig")
-            }
-            if(!StorageType.guard(builder._storageType)){
-                throw new AgentErrors.ValidationError("storageType")
-            }
-            if(!MediatorConfig.guard(builder._mediatorConfig)){
-                throw new AgentErrors.ValidationError("mediatorConfig")
-            }
-
-            this.#storageType = builder._storageType
-            this.#ledgerConfig = builder._ledgerConfig
-            this.#mediatorConfig = builder._mediatorConfig
-
-        }
-        else if(buildMode === 'open'){
-            if(!LedgerConfig.guard(builder._ledgerConfig)){
-                throw new AgentErrors.ValidationError("ledgerConfig")
-            }
-            if(!StorageType.guard(builder._storageType)){
-                throw new AgentErrors.ValidationError("storageType")
-            }
-            if(!MediatorConfig.guard(builder._mediatorConfig)){
-                throw new AgentErrors.ValidationError("mediatorConfig")
-            }
-
-            this.#storageType = builder._storageType
-            this.#ledgerConfig = builder._ledgerConfig
-            this.#mediatorConfig = builder._mediatorConfig
-        }
-        else{
-            throw new AgentErrors.Error(0, "Unidentified Build Mode")
-        }
+        this.#storageType = builder._storageType
+        this.#ledgerConfig = builder._ledgerConfig
+        this.#mediatorConfig = builder._mediatorConfig
 
         
-
-
         //Authenticate Wallet
 
 
-        
-        
-
-        
-
-
-        
 
         //Open Wallet
     }
@@ -141,148 +95,4 @@ export class Agent implements AgentInterface {
     getStorageType():StorageType{
         return this.#storageType
     }
-}
-
-
-
-
-
-
-
-
-export interface AgentBuilderInterface {
-    setWalletName(walletName:WalletName):AgentBuilder,
-    setStorageType(storageType:StorageType):AgentBuilder,
-    setLedgerConfig(ledgerConfig:LedgerConfig):AgentBuilder,
-    setMediatorConfig(mediatorConfig:MediatorConfig):AgentBuilder,
-    build():Agent
-}
-
-/**
- * Agent Builder - A Builder Class to create an Agent
- * @interface AgentBuilderInterface
- */
-export default class AgentBuilder implements AgentBuilderInterface {
-    _buildMode:BuildMode | null = null
-    _walletName:WalletName | null = null
-    _storageType:StorageType | null = null
-    _ledgerConfig:LedgerConfig | null = null
-    _mediatorConfig:MediatorConfig | null = null
-    _walletPassword:string | null = null
-    
-    /**
-     * Agent Builder - An instance of a Agent Builder Class to create an Agent
-     * @interface AgentBuilderInterface
-     */
-    constructor() {}
-
-
-    /**
-     * Sets the name of the Agent's wallet (Suggested to use a UUID)
-     * @param walletName Name of the wallet 
-     * @returns AgentBuilder
-     */
-    setWalletName(walletName:WalletName):AgentBuilder {
-        //Validation
-        try{
-            WalletName.check(walletName)
-        } catch(e){
-            throw new AgentErrors.ValidationError("walletName", e.message)
-        }
-
-        this._walletName = walletName
-        return this
-    }
-
-
-    /**
-     * Sets the storage type of the Agent's wallet
-     * @param storageType The type of storage implementation
-     * @returns AgentBuilder
-     */
-    setStorageType(storageType:StorageType):AgentBuilder {
-        //Validation
-        try{
-            StorageType.check(storageType)
-        } catch(e){
-            throw new AgentErrors.ValidationError("storageType", e.message)
-        }
-        
-        this._storageType = storageType
-        return this
-    }
-    
-
-    /**
-     * Sets the ledger configuration of the Agent
-     * @param ledgerConfig A ledger configuration
-     * @returns AgentBuilder
-     */
-    setLedgerConfig(ledgerConfig:LedgerConfig):AgentBuilder {
-        //Validation
-        try{
-            LedgerConfig.check(ledgerConfig)
-        } catch(e){
-            throw new AgentErrors.ValidationError("ledgerConfig", e.message)
-        }
-        
-        this._ledgerConfig = ledgerConfig
-        return this
-    }
-
-
-    /**
-     * Sets the mediator configuration of the Agent
-     * @param mediatorConfig A mediator configuration
-     * @returns AgentBuilder
-     */
-    setMediatorConfig(mediatorConfig:MediatorConfig):AgentBuilder {
-        //Validation
-        try{
-            MediatorConfig.check(mediatorConfig)
-        } catch(e){
-            throw new AgentErrors.ValidationError("mediatorConfig", e.message)
-        }
-        
-        this._mediatorConfig = mediatorConfig
-        return this
-    }
-
-
-    /**
-     * Sets AgentBuilder mode, such as create or open
-     * @param buildMode The build mode to use
-     * @returns AgentBuilder
-     */
-    setBuildMode(buildMode:BuildMode):AgentBuilder {
-        //Validation
-        try{
-            BuildMode.check(buildMode)
-        } catch(e){
-            throw new AgentErrors.ValidationError("buildMode", e.message)
-        }
-        
-        this._buildMode = buildMode
-        return this
-    }
-
-
-    /**
-     * Builds the Agent and returns the generated Agent instance
-     * @returns Agent
-     */
-    build():Agent {
-        return new Agent(this)
-    }
-}
-
-
-export interface DefaultAgentDirectorInterface {
-}
-
-export class DefaultAgentDirector implements DefaultAgentDirectorInterface {
-    constructor() {
-        console.log("Creating Default Agent");
-
-	}
 }

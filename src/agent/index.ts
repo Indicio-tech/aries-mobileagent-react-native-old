@@ -1,4 +1,4 @@
-import AgentBuilder, {DefaultAgentDirector} from './agent'
+import AgentBuilder, {DefaultAgentDirector} from './agentBuilder'
 
 export {
     AgentBuilder,
