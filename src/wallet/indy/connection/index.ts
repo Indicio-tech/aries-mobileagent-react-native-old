@@ -1,9 +1,9 @@
 import { NativeModules } from 'react-native';
 const RNFS = require('react-native-fs')
 
-import * as AgentErrors from '../errors'
-import {IndyError} from './errors'
-import { WalletName, WalletPassword } from '../agent/agent'
+import * as AgentErrors from '../../../errors'
+import {IndyError} from '../../errors'
+import { WalletName, WalletPassword } from '../../../agent/agent'
 
 //Libindy Native Bridging
 const {Indy} = NativeModules

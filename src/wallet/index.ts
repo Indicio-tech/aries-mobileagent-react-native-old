@@ -2,11 +2,12 @@ import { PermissionsAndroid } from 'react-native'
 import {Static, Literal, Union} from 'runtypes'
 
 import * as AgentErrors from '../errors'
-import IndyService from './libindy'
+import IndyService from './indy'
 
 
 export interface WalletServiceInterface {
-    
+    walletServiceType:WalletType
+    //Record Storage mechanisms should be able to throw notImplemented
 }
 
 export interface WalletServiceConstructorInterface {

@@ -1,7 +1,7 @@
 import * as AgentErrors from '../errors'
 import Agent, {AgentConfig, WalletName, WalletPassword, LedgerConfig, MediatorConfig } from './agent'
 import createWalletService, {WalletServiceInterface, WalletType} from '../wallet'
-
+import createStorageService, {StorageServiceInterface, StorageType} from '../storage'
 
 export interface AgentBuilderInterface {
     setWalletName(walletName:WalletName):AgentBuilder,
@@ -20,7 +20,7 @@ export default class AgentBuilder implements AgentBuilderInterface {
     _walletService!:WalletServiceInterface
     _walletName!:WalletName
     _walletPassword!:WalletPassword
-    _storageType!:StorageType
+    _storageService!:StorageServiceInterface
     _ledgerConfig!:LedgerConfig
     _mediatorConfig!:MediatorConfig
     
@@ -88,23 +88,20 @@ export default class AgentBuilder implements AgentBuilderInterface {
         return this
     }
 
-
     /**
-     * Sets the storage type of the Agent's wallet
-     * @param storageType The type of storage implementation
+     * Creates the Storage Service to be used by the Agent. Must be defined after the Wallet Service has been set since some storage implementations rely on the wallet service.
+     * @param storageService The type of wallet service. Must be a StorageType
      * @returns AgentBuilder
      * @throws ValidationError - AgentErrors.ValidationError
      */
-    setStorageType(storageType:StorageType):AgentBuilder {
-        //Validation
+    setStorageService(storageService:StorageType):AgentBuilder {
         try{
-            StorageType.check(storageType)
+            this._storageService = createStorageService(storageService, this._walletService)
+
+            return this
         } catch(e){
-            throw new AgentErrors.ValidationError("storageType", e.message)
+            throw new AgentErrors.Error(0, "Failed to Create Wallet Service");
         }
-        
-        this._storageType = storageType
-        return this
     }
     
 
