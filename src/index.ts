@@ -7,13 +7,11 @@ import axios from 'axios'
 global.Buffer = global.Buffer || require('buffer').Buffer
 
 
-
-
 import {AgentBuilder, AgentLoader, AgentDirector} from './agent'
 
 const Aries = {
     AgentBuilder: AgentBuilder,
     AgentLoader: AgentLoader,
-    AgentDirector: AgentDirector
+    AgentDirector: AgentDirector,
 }
 export default Aries

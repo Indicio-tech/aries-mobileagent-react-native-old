@@ -1,7 +1,7 @@
 import {Record, Static, String, Undefined} from 'runtypes'
 
 import {UUID} from '../types/uuid'
-import {StorageType} from '../walletInterface'
+import {StorageType} from '../wallet'
 
 import * as AgentErrors from '../errors'
 import AgentBuilder from './agentBuilder'

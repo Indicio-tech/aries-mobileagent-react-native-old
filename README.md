@@ -66,8 +66,9 @@ npm install react-native-fs react-native-get-random-values
 
 ## Usage
 
-Hot reloading may not work correctly with instantiated Agent objects. Reloading (`r`) will work. Any changes made to native modules require you to re-run `react-native run-android`.
+Hot reloading may not work correctly with instantiated Agent objects. Reloading (`r`) will work. Any changes made to native modules require you to re-run `npx react-native run-android`.
 
+Note: Currently AMA-RN does not support multiple agents or wallets. You may experience difficulties or unexpected behavior when creating multiple agents 
 
 ## Troubleshooting
 

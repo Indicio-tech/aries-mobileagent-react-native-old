@@ -2,6 +2,7 @@
   "name": "aries-mobileagent-react-native",
   "version": "0.1.0",
   "description": "Aries Mobile Agent React Native - An Aries Mobile Agent written to create an interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features.",
+  "license": "Apache-2.0",
   "main": "./src/index.ts",
   "types": "./build/index.d.ts",
   "scripts": {

@@ -1,8 +1,6 @@
 import * as AgentErrors from '../errors'
 import Agent, {AgentConfig, WalletName, WalletPassword, LedgerConfig, MediatorConfig } from './agent'
-import {StorageType} from '../walletInterface'
-
-import Wallet from '../walletInterface'
+import createWalletService, {WalletServiceInterface, WalletType} from '../wallet'
 
 
 export interface AgentBuilderInterface {
@@ -19,6 +17,7 @@ export interface AgentBuilderInterface {
  * @interface AgentBuilderInterface
  */
 export default class AgentBuilder implements AgentBuilderInterface {
+    _walletService!:WalletServiceInterface
     _walletName!:WalletName
     _walletPassword!:WalletPassword
     _storageType!:StorageType
@@ -31,6 +30,23 @@ export default class AgentBuilder implements AgentBuilderInterface {
      */
     constructor() {
         console.log("Building Agent")
+    }
+
+
+    /**
+     * Creates the wallet service to be used by the Agent
+     * @param walletService The type of wallet service. Must be a WalletType
+     * @returns AgentBuilder
+     * @throws ValidationError - AgentErrors.ValidationError
+     */
+    setWalletService(walletService:WalletType):AgentBuilder {
+        try{
+            this._walletService = createWalletService(walletService)
+
+            return this
+        } catch(e){
+            throw new AgentErrors.Error(0, "Failed to Create Wallet Service");
+        }
     }
 
 
@@ -172,6 +188,8 @@ export default class AgentBuilder implements AgentBuilderInterface {
 
         //Create Wallet via the Wallet Interface
         await Wallet.createWallet(this._storageType, this._walletName, this._walletPassword);
+
+
 
         //Store Agent Config Variables via the Wallet Interface
         

@@ -1,5 +1,5 @@
 import AgentBuilder, {AgentLoader, AgentDirector} from './agentBuilder'
-import Wallet from '../walletInterface'
+import Wallet from '../wallet'
 
 export {
     AgentBuilder,
