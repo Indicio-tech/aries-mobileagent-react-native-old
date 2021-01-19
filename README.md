@@ -30,6 +30,11 @@ Within your React Native app, run with your target version:
 npm install "git@github.com:Indicio-tech/aries-mobileagent-react-native.git#v0.x.x"
 ```
 
+Add the following to `allprojects` in your React Native app build.gradle:
+```
+maven { url 'https://repo.sovrin.org/repository/maven-public' }
+```
+
 ### Local Library Development
 We suggest using git submodules for local development, due to known [metro symlink issues](https://github.com/facebook/metro/issues/1) that prevent the usage of local npm dependecies or `npm link`. You may be able to utilize a [custom metro configuration](https://github.com/facebook/metro/issues/447).
 
@@ -53,6 +58,11 @@ Install and autolink your local AMA-RN library in your App:
 ```
 cd ..
 npm install aries-mobileagent-react-native
+```
+
+Add the following to `allprojects` in your React Native app build.gradle:
+```
+maven { url 'https://repo.sovrin.org/repository/maven-public' }
 ```
 
 You should now be able to develop your app and AMA-RN locally.
