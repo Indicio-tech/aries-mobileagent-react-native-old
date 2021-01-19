@@ -48,9 +48,9 @@ Agent Load
         Routine actions
 */
 
-import {AgentBuilder, AgentLoader, AgentDirector} from './agent'
+//import {AgentBuilder, AgentLoader, AgentDirector} from './agent'
 
-
+import AgentManager, {AgentManagerInterface} from './agent'
 
 
 /**
@@ -59,10 +59,11 @@ import {AgentBuilder, AgentLoader, AgentDirector} from './agent'
 class AMARN {
     #walletService!:WalletServiceInterface
     #storageService!:StorageServiceInterface
-
+    #agentManager:AgentManagerInterface
 
     constructor(){
         console.info(`Loading AMA-RN`)
+        this.#agentManager = AgentManager
     }
 
     /**
@@ -166,12 +167,44 @@ class AMARN {
         return true
     }
 
-    
-    createAgent(){
-        console.info(`Creating New Agent`)
+    /**
+     * Checks to identify if the agent has been created
+     * @returns boolean - Returns a true if configuration has occurred, false if configuration has not occurred
+     * @throws Error - AgentErrors.Error - Thrown if there is an error while checking the configuration
+     */
+    created():boolean {
+        console.info("Checking AMA-RN Agent created state")
+
         this.checkDependencies()
 
-        //Create Agent
+        return false
+    }
+
+    /**
+     * Creates the agent via the provided configuration
+     * @returns void
+     * @throws Error - AgentErrors.Error - Thrown if there is an error while creating the agent
+     */
+    createAgent():void {
+        console.info("Creating Agent");
+
+        this.checkDependencies()
+        //this.#agentManager.createAgent(this.#walletService, this.#storageService, )
+    }
+
+
+    /**
+     * Loads the agent
+     * @returns agent - an agent object
+     * @throws Error - AgentErrors.Error - Thrown if there is an error while loading the agent
+     */
+    loadAgent():agent {
+        console.info("Loading Agent")
+
+        this.checkDependencies()
+
+
+        //return agent
     }
 }
 
