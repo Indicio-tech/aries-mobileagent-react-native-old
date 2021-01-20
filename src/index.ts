@@ -11,7 +11,7 @@ import * as AgentErrors from './errors'
 
 //Wallet Dependencies
 import WalletServiceInterface from './wallet'
-import IndyService from './wallet/indy'
+import IndyService from './wallet/libindy'
 
 //Default AMA-RN loaded Wallet Services
 export const WalletType = Union(
@@ -52,18 +52,33 @@ Agent Load
 
 import AgentManager, {AgentManagerInterface} from './agent'
 
+interface AMARNInterface {
+    agentManager:AgentManager
+}
 
 /**
  * To initialize AMA-RN and manage its dependencies
  */
-class AMARN {
+export default class AMARN implements AMARNInterface {
     #walletService!:WalletServiceInterface
     #storageService!:StorageServiceInterface
-    #agentManager:AgentManagerInterface
+    
+    //Manages creation and loading of the agent
+    agentManager:AgentManager
 
-    constructor(){
-        console.info(`Loading AMA-RN`)
-        this.#agentManager = AgentManager
+    
+    constructor(walletService:WalletType, storageService:StorageType){
+        try{
+            console.info(`Loading AMA-RN`)
+            this._setWallet(walletService)
+            this._setStorage(storageService)
+            this.agentManager = new AgentManager(this.getWallet(), this.getStorage())
+            //this.getWallet().createWallet
+            this.checkDependencies()
+        }
+        catch(error) {
+            throw new AgentErrors.Error(0, "Failed to Start AMARN");
+        }
     }
 
     /**
@@ -73,7 +88,7 @@ class AMARN {
      * @throws ValidationError - AgentErrors.ValidationError
      * @throws Error - AgentErrors.Error
      */
-    setWallet(walletService:WalletType):void {
+    _setWallet(walletService:WalletType):void {
         //(JamesKEbert)TODO: Add the capability to pass an external service for dependency injection
         console.info(`Setting Wallet Service of type ${walletService}`)
 
@@ -112,7 +127,7 @@ class AMARN {
      * @throws ValidationError - AgentErrors.ValidationError
      * @throws Error - AgentErrors.Error
      */
-    setStorage(storageService:StorageType){
+    _setStorage(storageService:StorageType){
         //(JamesKEbert)TODO: Add the capability to pass an external service for dependency injection
         console.info(`Setting Storage Service of type ${storageService}`)
 
@@ -166,54 +181,4 @@ class AMARN {
 
         return true
     }
-
-    /**
-     * Checks to identify if the agent has been created
-     * @returns boolean - Returns a true if configuration has occurred, false if configuration has not occurred
-     * @throws Error - AgentErrors.Error - Thrown if there is an error while checking the configuration
-     */
-    created():boolean {
-        console.info("Checking AMA-RN Agent created state")
-
-        this.checkDependencies()
-
-        return false
-    }
-
-    /**
-     * Creates the agent via the provided configuration
-     * @returns void
-     * @throws Error - AgentErrors.Error - Thrown if there is an error while creating the agent
-     */
-    createAgent():void {
-        console.info("Creating Agent");
-
-        this.checkDependencies()
-        //this.#agentManager.createAgent(this.#walletService, this.#storageService, )
-    }
-
-
-    /**
-     * Loads the agent
-     * @returns agent - an agent object
-     * @throws Error - AgentErrors.Error - Thrown if there is an error while loading the agent
-     */
-    loadAgent():agent {
-        console.info("Loading Agent")
-
-        this.checkDependencies()
-
-
-        //return agent
-    }
 }
-
-export default new AMARN()
-
-
-// const Aries = {
-//     AgentBuilder: AgentBuilder,
-//     AgentLoader: AgentLoader,
-//     AgentDirector: AgentDirector,
-// }
-// export default Aries

@@ -3,7 +3,7 @@ const RNFS = require('react-native-fs')
 
 import * as AgentErrors from '../../../errors'
 import {IndyError} from '../../errors'
-import { WalletName, WalletPassword } from '../../../agent/agent'
+import { WalletName, WalletPassword } from '../../../agent'
 
 //Libindy Native Bridging
 const {Indy} = NativeModules

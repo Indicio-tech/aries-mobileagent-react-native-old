@@ -1,6 +1,18 @@
 # Aries Mobile Agent React Native (AMA-RN)
 An Aries Mobile Agent written to create an interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features. Currently built for Android with iOS support planned.
 
+## Future Work / Roadmap
+
+- [ ] Credential Issuance (estimated 1/27).
+- [ ] Credential Presentation (estimated 1/27).
+- [ ] Modify and utilize [updated mediation capabilities](https://github.com/hyperledger/aries-rfcs/blob/master/features/0211-route-coordination/README.md) in ACA-Py.
+- [ ] iOS support.
+- [ ] Access and consume machine readable governance frameworks.
+- [ ] Modify storage mechanisms.
+- [ ] Out of Band (OOB) support.
+    - [ ] did:key support.
+    - [ ] DID Exchange support.
+
 ## App Requirements
 
 AMA-RN is built on React Native 0.61.5. Newer versions of React Native expierience issues with ZMQ (Fatal Signal 6 (SIGABRT)). 
@@ -84,7 +96,7 @@ Note: Currently AMA-RN does not support multiple agents or wallets. You may expe
 
 #### Native Module Linking or Usage Issues
 
-If you end up changes dependencies or structures, you may need to clean the app:
+If you end up changing dependencies or structures, you may need to clean the app:
 ```
 cd android
 ./gradlew clean
