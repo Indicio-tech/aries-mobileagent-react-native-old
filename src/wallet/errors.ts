@@ -13,10 +13,13 @@ export default class WalletError extends AgentError{
 }
 
 export class IndyError extends AgentError{
+    indyErrorCode:string
+
     constructor(indyMessage:any, ...params:any[]) {
         super(5, 'IndyError', ...params)
         
         const parsedIndyMessage = JSON.parse(indyMessage)
         this.message = `Code ${this.code} - IndyError: '${parsedIndyMessage.code}' - ${parsedIndyMessage.message}`
+        this.indyErrorCode = parsedIndyMessage.code
     }
 }

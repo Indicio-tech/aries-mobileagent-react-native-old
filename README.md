@@ -1,5 +1,5 @@
 # Aries Mobile Agent React Native (AMA-RN)
-An Aries Mobile Agent written to create an interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features. Currently built for Android with iOS support planned.
+Aries Mobile Agent React Native is an Aries Mobile Agent written to create an interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features. This project was started to fill gaps in the Aries community for good and accessible opensource mobile agents. Currently built for Android with iOS support planned. 
 
 ## Future Work / Roadmap
 

@@ -11,7 +11,7 @@ import * as AgentErrors from './errors'
 
 //Wallet Dependencies
 import WalletServiceInterface from './wallet'
-import IndyService from './wallet/libindy'
+import IndyService from './wallet/indy'
 
 //Default AMA-RN loaded Wallet Services
 export const WalletType = Union(
