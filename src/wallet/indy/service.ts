@@ -4,16 +4,15 @@ import * as AgentErrors from '../../errors'
 
 import storagePermissions from './permissions'
 
-import WalletServiceInterface, {WalletName, WalletPassword, MasterSecretID, LedgerConfigName, LedgerGenesisString} from '../index'
+import WalletServiceInterface, {WalletName, WalletPassword, MasterSecretID, LedgerConfigName, LedgerGenesisString, StorageRecord, RecordRetrievalOptions} from '../index'
 
 import IndyConnection from './connection/indy'
-import IndyInterface from './connection/indyInterface'
 
 //(JamesKEbert)TODO: Abstract into separate repo or project potentially
 
 export default class IndyService implements WalletServiceInterface {
     walletServiceType:string = "Indy"
-    #indy:IndyInterface
+    #indy:IndyConnection
 
     constructor(){
         console.info(`Created IndyService`)
@@ -42,17 +41,64 @@ export default class IndyService implements WalletServiceInterface {
         await this.#indy.createPoolLedgerConfig(ledgerConfigName, ledgerGenesisString)
 
         //Open the pool
-        await this.#indy.checkPool(ledgerConfigName, null)
+        await this.#indy.openPool(ledgerConfigName, null)
 
-        //Store the pool configuration name
-        
-
-        //Create Agent Object
+        console.info("Wallet Creation Finished")
 
         return
     }
 
+    async openWallet(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+    ):Promise<void> {
+        console.info("Opening Wallet")
+
+        await this.#indy.openWallet(walletName, walletPassword)
+
+        console.info("Wallet Opened")
+    }
+
+    async openLedger(ledgerConfigName:LedgerConfigName):Promise<void> {
+        console.info("Opening Ledger")
+
+        await this.#indy.openPool(ledgerConfigName, null)
+
+        console.info("Ledger Opened")
+    }
+
     async generateMasterSecretID():Promise<MasterSecretID> {
         return uuidv4()
+    }
+
+    async storeRecord(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        record:StorageRecord
+    ):Promise<void> {
+        await this.#indy.addRecord(
+            walletName, 
+            walletPassword,
+            record.type,
+            record.id,
+            record.content,
+            record.tags
+        )
+    }
+
+    async getRecord(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        recordType: string,
+        recordID: string,
+        retrievalOptions:RecordRetrievalOptions
+    ):Promise<string>{
+        return await this.#indy.getRecord(
+            walletName, 
+            walletPassword,
+            recordType,
+            recordID,
+            retrievalOptions
+        )
     }
 }

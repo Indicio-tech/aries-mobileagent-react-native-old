@@ -1,4 +1,5 @@
 import { NativeModules } from 'react-native';
+import { parse } from 'url';
 const RNFS = require('react-native-fs')
 
 import * as AgentErrors from '../../../errors'
@@ -6,7 +7,21 @@ import {IndyError} from '../../errors'
 
 import storagePermissions from '../permissions'
 
-import IndyInterface, { WalletName, WalletPassword, WalletConfig, WalletCredentials, MasterSecretID, PoolConfig, PoolConfigName, PoolRuntimeConfig } from './indyInterface'
+import IndyInterface, { 
+    WalletName, 
+    WalletPassword, 
+    WalletConfig, 
+    WalletCredentials, 
+    MasterSecretID, 
+    PoolConfig, 
+    PoolConfigName, 
+    PoolRuntimeConfig,
+    RecordType,
+    RecordID,
+    RecordValue,
+    RecordTags,
+    RecordRetrievalOptions
+} from './indyInterface'
 
 //Libindy Native Bridging
 const { Indy } = NativeModules
@@ -54,6 +69,40 @@ export default class IndyConnection implements IndyInterface {
             )  
             
             console.info("Wallet Created")
+
+            return
+        } catch (error) {
+            //(JamesKEbert)TODO: Revise this
+            //Attempt to make into an error, if not possible, throw original error  
+
+            var indyError;
+            try{
+                indyError = new IndyError(error.message);
+            } catch(e){
+                throw error
+            } 
+        
+            throw indyError
+        }
+    }
+
+    async openWallet(walletName:WalletName, walletPassword:WalletPassword):Promise<void> {
+        try {   
+            console.info("Checking Wallet")
+
+            //Check Permissions
+            await storagePermissions()
+
+            const walletConfig = this._createWalletConfig(walletName, defaultStoragePath)
+            const walletCredentials = this._createWalletCredentials(walletPassword)
+
+            //Create the Wallet
+            await Indy.checkWallet(
+                walletConfig,
+                walletCredentials
+            )  
+            
+            console.info("Wallet has been created and opened")
 
             return
         } catch (error) {
@@ -147,7 +196,7 @@ export default class IndyConnection implements IndyInterface {
         }
     }
 
-    async checkPool(configName:PoolConfigName, runtimeConfig:PoolRuntimeConfig = null):Promise<void> {
+    async openPool(configName:PoolConfigName, runtimeConfig:PoolRuntimeConfig = null):Promise<void> {
         try {   
             console.info(`Opening Pool with name ${configName}`)
             
@@ -177,5 +226,90 @@ export default class IndyConnection implements IndyInterface {
         
             throw indyError
         }
+    }
+
+    async addRecord(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recordType:RecordType,
+        recordID:RecordID,
+        recordValue:RecordValue,
+        recordTags:RecordTags
+    ): Promise<void> {
+        try {   
+            console.info(`Adding Record`)
+            
+            //Check Permissions
+            await storagePermissions()
+
+            const walletConfig = this._createWalletConfig(walletName, defaultStoragePath)
+            const walletCredentials = this._createWalletCredentials(walletPassword)
+
+            //Add Record
+            await Indy.addRecord(
+                walletConfig, 
+                walletCredentials,
+                recordType,
+                recordID,
+                recordValue,
+                recordTags
+            )  
+
+            return
+        } catch (error) {
+            //(JamesKEbert)TODO: Revise this
+            //Attempt to make into an error, if not possible, throw original error  
+            
+            var indyError;
+            try{
+                indyError = new IndyError(error.message);
+            } catch(e){
+                throw error
+            } 
+        
+            throw indyError
+        } 
+    }
+
+    async getRecord(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recordType:RecordType,
+        recordID:RecordID, 
+        retrievalOptions:RecordRetrievalOptions = "{}"
+    ):Promise<string> {
+        try {   
+            console.info(`Getting Record by ID ${recordID} and type ${recordType}`)
+            
+            //Check Permissions
+            await storagePermissions()
+
+            const walletConfig = this._createWalletConfig(walletName, defaultStoragePath)
+            const walletCredentials = this._createWalletCredentials(walletPassword)
+
+            //Add Record
+            const record = await Indy.getRecord(
+                walletConfig, 
+                walletCredentials,
+                recordType,
+                recordID,
+                retrievalOptions
+            )  
+            
+            
+            return record
+        } catch (error) {
+            //(JamesKEbert)TODO: Revise this
+            //Attempt to make into an error, if not possible, throw original error  
+            
+            var indyError;
+            try{
+                indyError = new IndyError(error.message);
+            } catch(e){
+                throw error
+            } 
+        
+            throw indyError
+        } 
     }
 }

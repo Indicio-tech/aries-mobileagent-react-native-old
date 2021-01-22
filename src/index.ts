@@ -22,11 +22,11 @@ export type WalletType = Static<typeof WalletType>
 
 //Storage Dependencies
 import StorageServiceInterface from './storage'
-import LibIndyStorageService from './storage/libIndy'
+import NonSecretsStorageService from './storage/nonSecrets'
 
 //Default AMA-RN loaded Storage Services
 export const StorageType = Union(
-    Literal('LibIndyNonSecrets')
+    Literal('NonSecrets')
 )
 export type StorageType = Static<typeof StorageType>
 
@@ -50,7 +50,7 @@ Agent Load
 
 //import {AgentBuilder, AgentLoader, AgentDirector} from './agent'
 
-import AgentManager, {AgentManagerInterface} from './agent'
+import AgentManager from './agentManager'
 
 interface AMARNInterface {
     agentManager:AgentManager
@@ -136,9 +136,9 @@ export default class AMARN implements AMARNInterface {
         }
     
         switch (storageService) {
-            case 'LibIndyNonSecrets':
+            case 'NonSecrets':
                 if(this.getWallet().walletServiceType === "Indy"){
-                    this.#storageService = new LibIndyStorageService(this.getWallet())
+                    this.#storageService = new NonSecretsStorageService(this.getWallet())
                 }
                 else{
                     throw new AgentErrors.Error(0, "LibIndyNonSecrets Storage requires the Indy Wallet Service to be used")
