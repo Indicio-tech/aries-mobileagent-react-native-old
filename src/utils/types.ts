@@ -16,3 +16,6 @@ export type UUID = Static<typeof UUID>
 // console.log(testUUID)
 // console.log(UUID.check(testUUID))
 // console.log(UUID.check("39393-344"))
+
+export const URLType = String
+export type URLType = Static<typeof URLType>

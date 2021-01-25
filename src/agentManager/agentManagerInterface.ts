@@ -1,5 +1,7 @@
 import {Record, Union, Literal, Static, String, Undefined} from 'runtypes'
 
+import Agent from '../agent'
+
 //Agent Types
 export const WalletName = String
 export type WalletName = Static<typeof WalletName>
@@ -59,8 +61,11 @@ export const AgentConfig = Record({
 export type AgentConfig = Static<typeof AgentConfig>
 
 export default interface AgentManagerInterface {
-    created():boolean,
     generateMasterSecretID():Promise<MasterSecretID>,
-    createAgent(creationParameters:AgentConfig):Promise<void>,
-    loadAgent():any
+    createAgent(creationParameters:AgentConfig):Promise<Agent>,
+    loadAgent(
+        walletName:WalletName, 
+        walletPassword: WalletPassword, 
+        masterSecretID: MasterSecretID
+    ):Promise<Agent>
 }

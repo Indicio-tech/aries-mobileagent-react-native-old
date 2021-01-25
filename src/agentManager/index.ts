@@ -8,7 +8,7 @@ import StorageServiceInterface from '../storage'
 //Wallet Dependencies
 import WalletServiceInterface from '../wallet'
 
-import AgentManagerInterface, {MasterSecretID, AgentConfig } from './agentManagerInterface'
+import AgentManagerInterface, {WalletName, WalletPassword,MasterSecretID, AgentConfig } from './agentManagerInterface'
 
 import Agent from '../agent'
 
@@ -29,9 +29,7 @@ export default class AgentManager implements AgentManagerInterface {
      * @throws Error - AgentErrors.Error - Thrown if there is an error while checking the configuration
      */
     created():boolean {
-        console.info("Checking AMA-RN Agent created state")
-
-        return false
+        throw Error("Not Implemented")
     }
 
     /**
@@ -51,7 +49,7 @@ export default class AgentManager implements AgentManagerInterface {
      * @throws Error - AgentErrors.Error - Thrown if there is an error while creating the agent
      * ValidationError - AgentErrors.ValidationError
      */
-    async createAgent(creationParameters:AgentConfig):Promise<void> {
+    async createAgent(creationParameters:AgentConfig):Promise<Agent> {
         const startTime = Date.now()
 
         console.info("Creating Agent")
@@ -66,18 +64,6 @@ export default class AgentManager implements AgentManagerInterface {
 
         //Perform creation
         try{
-            //Open Storage Service
-            //createAgent()
-                //Create Indy Wallet (name, password, mastersecretID)
-                //Open Indy Pool
-                //Store Indy Pool Config
-                //Create Master Secret ID in Indy
-                //Create agent object
-            //(Optional) Governance Framework Fetching
-            //(Optional) Initiate mediation request
-            //Return Agent object
-
-            
             await this.#walletService.createWallet(
                 creationParameters.walletName, 
                 creationParameters.walletPassword,
@@ -93,9 +79,9 @@ export default class AgentManager implements AgentManagerInterface {
                 {
                     type: "ledgerConfig",
                     id: `${creationParameters.walletName}-default`, //JamesKEbert TODO: Replace default ID with multi-ledger functionality
-                    content: JSON.stringify({
+                    content: {
                         configName: creationParameters.ledgerConfig.name
-                    }),
+                    },
                     tags: {
                         default: "true"
                     }
@@ -106,12 +92,12 @@ export default class AgentManager implements AgentManagerInterface {
             const agent = new Agent(
                 creationParameters.walletName, 
                 creationParameters.walletPassword,
+                creationParameters.masterSecretID,
                 this.#walletService,
                 this.#storageService
             );
 
-            //TODO: REMOVE
-            await agent.startup()
+            //await agent.startup()
 
 
             //Fetch governance framework
@@ -120,6 +106,8 @@ export default class AgentManager implements AgentManagerInterface {
         
             const durationTime = Date.now() - startTime
             console.info(`Finished Agent Creation, took ${durationTime} milliseconds`)
+            
+            return agent
         } catch (error) {
             throw error
         }
@@ -131,12 +119,41 @@ export default class AgentManager implements AgentManagerInterface {
      * @returns agent - an agent object
      * @throws Error - AgentErrors.Error - Thrown if there is an error while loading the agent
      */
-    loadAgent(/*walletName:WalletName, walletPassword: WalletPassword, masterSecretID*/){
+    async loadAgent(
+        walletName:WalletName, 
+        walletPassword: WalletPassword, 
+        masterSecretID: MasterSecretID
+    ):Promise<Agent>{
         console.info("Loading Agent")
-        //Open Storage Service
-        //Open Wallet (name, password, mastersecretID)
-        //Load Indy Pool Config
-        //Open Indy Pool
+        
+        //Validate Loading parameters
+        try{
+            WalletName.check(walletName)
+        } catch (error) {
+            throw new AgentErrors.ValidationError("walletName", error.message)
+        }
+        try{
+            WalletPassword.check(walletPassword)
+        } catch (error) {
+            throw new AgentErrors.ValidationError("walletPassword", error.message)
+        }
+        try{
+            MasterSecretID.check(masterSecretID)
+        } catch (error) {
+            throw new AgentErrors.ValidationError("masterSecretID", error.message)
+        }
 
+        //Create Agent Object
+        const agent = new Agent(
+            walletName, 
+            walletPassword,
+            masterSecretID,
+            this.#walletService,
+            this.#storageService
+        );
+
+        await agent.startup()
+
+        return agent
     }
 }

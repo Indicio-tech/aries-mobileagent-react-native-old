@@ -1,5 +1,5 @@
 import { Static, Union, Literal, Record, String } from 'runtypes'
-import { UUID } from '../types/uuid'
+import { UUID } from '../utils/types'
 
 export const StorageName = String
 export type StorageName = Static<typeof StorageName>

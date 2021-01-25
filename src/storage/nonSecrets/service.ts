@@ -61,7 +61,12 @@ export default class NonSecretsService implements StorageServiceInterface {
             )
             
             let processedRecord = JSON.parse(nonSecretsRecord);
-            processedRecord.content = JSON.parse(processedRecord.value)
+            processedRecord = {
+                type: processedRecord.type,
+                id: processedRecord.id,
+                content: JSON.parse(processedRecord.value),
+                tags: processedRecord.tags
+            }
 
             console.info("Retrieved Record:", processedRecord)
             return processedRecord

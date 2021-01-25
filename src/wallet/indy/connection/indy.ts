@@ -5,7 +5,7 @@ const RNFS = require('react-native-fs')
 import * as AgentErrors from '../../../errors'
 import {IndyError} from '../../errors'
 
-import storagePermissions from '../permissions'
+import storagePermissions from '../../../permissions'
 
 import IndyInterface, { 
     WalletName, 

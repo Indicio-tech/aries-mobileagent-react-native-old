@@ -1,10 +1,13 @@
 import { Static, Record, String } from 'runtypes'
 
-export const WalletName = String;
+export const WalletName = String
 export type WalletName = Static<typeof WalletName>
 
-export const WalletPassword = String;
+export const WalletPassword = String
 export type WalletPassword = Static<typeof WalletPassword>
+
+export const MasterSecretID = String
+export type MasterSecretID = Static<typeof MasterSecretID>
 
 export default interface AgentInterface {
     /**

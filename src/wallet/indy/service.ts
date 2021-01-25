@@ -2,7 +2,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 import * as AgentErrors from '../../errors'
 
-import storagePermissions from './permissions'
+import storagePermissions from '../../permissions'
 
 import WalletServiceInterface, {WalletName, WalletPassword, MasterSecretID, LedgerConfigName, LedgerGenesisString, StorageRecord, RecordRetrievalOptions} from '../index'
 
