@@ -1,8 +1,8 @@
 import { Static, Record, String, Union, Literal, Number, Null, Undefined, Array } from 'runtypes'
-import { UUID, URLType } from '../../utils/types'
+import { UUID, URLType } from '../../../utils/types'
 
 import { MediationDetails } from '../mediation/mediatorInterface'
-import { Invitation } from '../protocols/connections/connectionsInterface'
+import { Invitation } from '../../protocols/connections/connectionsInterface'
 
 export const DIDDoc = Record({})
 export type DIDDoc = Static<typeof DIDDoc>

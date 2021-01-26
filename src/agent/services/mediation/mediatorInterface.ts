@@ -1,5 +1,5 @@
 import {Static, Record, String, Literal, Array, Union} from 'runtypes'
-import { URLType } from '../../utils/types'
+import { URLType } from '../../../utils/types'
 
 export const MediationStatus = Union(
     Literal("not-mediating"), 

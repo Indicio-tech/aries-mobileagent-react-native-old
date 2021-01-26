@@ -1,20 +1,29 @@
 import { InboundMessageHandler, OutboundMessageHandler } from '../../messages'
 
+
+import ConnectionsManager from '../../services/connectionsManager/connectionsManager'
+
+import { HandlerIdentifier } from '../protocolHandlerInterface'
+import BaseProtocolHandler from '../baseProtocolHandler'
+
 import ConnectionsHandlerInterface from './connectionsInterface'
 
-import { ProtocolURI } from '../protocolsInterface'
+export default class ConnectionsHandler extends BaseProtocolHandler implements ConnectionsHandlerInterface {
+    #connectionsManager:ConnectionsManager
 
-export default class ConnectionsHandler implements ConnectionsHandlerInterface {
-    protocolURI:ProtocolURI = "https://didcomm.org/connections/1.0/"
-    #inboundHandler:InboundMessageHandler
+    constructor(connectionManager:ConnectionsManager){
+        super("connections-1.0")
 
-    constructor(inboundHandler:InboundMessageHandler){
-        console.info("Created Connections Protocol Handler")
+        //Setup necessary services
+        this.#connectionsManager = connectionManager
 
-        this.#inboundHandler = inboundHandler
+        //Setup message routes
+        this.registerMessages({
+            "https://didcomm.org/connections/1.0/response": this.response
+        })
     }
 
-    async inboundMessage():Promise<void> {
-        console.log("Inbound Connection Message")
+    async response():Promise<void>{
+        console.info("Connections Handler did something")
     }
 }

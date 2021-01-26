@@ -1,14 +1,18 @@
 //Storage Dependencies
-import StorageServiceInterface from '../../storage'
+import StorageServiceInterface from '../../../storage'
 
 //Wallet Dependencies
-import WalletServiceInterface from '../../wallet'
+import WalletServiceInterface from '../../../wallet'
+
+import ConnectionsHandlerInterface from '../../protocols/connections/connectionsInterface'
 
 import ConnectionsManagerInterface from './connectionsManagerInterface'
 
 export default class ConnectionsManager implements ConnectionsManagerInterface {
     #walletService:WalletServiceInterface
     #storageService:StorageServiceInterface
+    
+    #connectionsHandler!:ConnectionsHandlerInterface
     
     constructor(
         walletService:WalletServiceInterface,
@@ -19,4 +23,10 @@ export default class ConnectionsManager implements ConnectionsManagerInterface {
         this.#walletService = walletService
         this.#storageService = storageService
     }
+
+    registerProtocolHandlers(connections:ConnectionsHandlerInterface):void{
+        this.#connectionsHandler = connections
+        console.info("Protocols Registered in ConnectionsManager Service")
+    }
 }
+

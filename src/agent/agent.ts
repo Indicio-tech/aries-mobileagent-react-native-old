@@ -8,8 +8,10 @@ import StorageServiceInterface from '../storage'
 //Wallet Dependencies
 import WalletServiceInterface from '../wallet'
 
-import ConnectionsManager from './connectionsManager/connectionsManager'
+import ConnectionsManager from './services/connectionsManager/connectionsManager'
 import { InboundMessageHandler } from './messages'
+
+import ProtocolHandlerInterface from './protocols/protocolHandlerInterface'
 
 //Protocols
 import ConnectionsHandler from './protocols/connections/connections'
@@ -22,9 +24,12 @@ export default class Agent implements AgentInterface {
     #walletService:WalletServiceInterface
     #storageService:StorageServiceInterface
     #connectionManager:ConnectionsManager
-    #inboundMessageHandler:InboundMessageHandler
+    
+    // #inboundMessageHandler:InboundMessageHandler
 
-    #protocolHandlers:Array<any>
+    #protocolHandlers:{
+        [handlerIdentifiers:string]: ProtocolHandlerInterface
+    } = {}
 
     constructor(
         walletName:WalletName,
@@ -35,6 +40,7 @@ export default class Agent implements AgentInterface {
     ) {
         console.info("Adding Agent Dependencies")
 
+        //Add/Create Services
         this.#walletName = walletName
         this.#walletPassword = walletPassword
         this.#masterSecretID = masterSecretID
@@ -46,21 +52,17 @@ export default class Agent implements AgentInterface {
             this.#walletService,
             this.#storageService
         )
-        
-        this.#inboundMessageHandler = new InboundMessageHandler()
 
-        //Register Protocol Handlers
-        let i = 0;
-        this.#protocolHandlers = []
-        this.#protocolHandlers[i] = new ConnectionsHandler(this.#inboundMessageHandler)
-        
-        this.#inboundMessageHandler.register(
-            this.#protocolHandlers[i].inboundMessage,
-            this.#protocolHandlers[i].protocolURI
-        )
-        //this.#protocolHandlers[i++] = new 
-        
+        //Create Protocol Handlers
+        const handlersList:Array<any> = [ConnectionsHandler] //JamesKEbert TODO: Fix constant type
+        for(var i = 0; i < handlersList.length; i++){
+            const protocolHandler:ProtocolHandlerInterface = new handlersList[i](this.#connectionManager)
+            this.#protocolHandlers[protocolHandler.handlerIdentifier] = protocolHandler
+        }
 
+        //Register Protocols as needed with services
+        //JamesKEbert TODO: perform this registration process from the service side, which will help in abstraction/service plugin capabilities
+        this.#connectionManager.registerProtocolHandlers(this.#protocolHandlers["https://didcomm.org/connections/1.0/"])
     }
 
     async startup():Promise<void> {

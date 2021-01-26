@@ -2,6 +2,8 @@ import {Static, Record, String, Literal, Array, Undefined} from 'runtypes'
 import { URLType } from '../../../utils/types'
 import { MessageID } from '../../messages/messagesInterface'
 
+import ProtocolHandlerInterface from '../protocolHandlerInterface'
+
 export const Invitation = Record({
     "@type": Literal("https://didcomm.org/connections/1.0/invitation"),
     "@id": MessageID,
@@ -12,7 +14,4 @@ export const Invitation = Record({
 })
 export type Invitation = Static<typeof Invitation>
 
-export default interface ConnectionsHandlerInterface {
-    protocolURI:string
-    inboundMessage():Promise<void>
-}
+export default interface ConnectionsHandlerInterface extends ProtocolHandlerInterface {}
