@@ -1,4 +1,4 @@
-import StorageServiceInterface, { StorageName, StoragePassword, RecordType, RecordID, StorageRecord, RecordRetrievalOptions } from '../index'
+import StorageServiceInterface, { StorageName, StoragePassword, RecordType, RecordID, StorageRecord, RecordRetrievalOptions, RecordSearchOptions, RecordSearchQuery } from '../index'
 
 import WalletServiceInterface from '../../wallet'
 
@@ -70,6 +70,55 @@ export default class NonSecretsService implements StorageServiceInterface {
 
             console.info("Retrieved Record:", processedRecord)
             return processedRecord
+        } catch (error){
+            throw error
+        }
+    }
+
+    async searchRecords(
+        storageName:StorageName, 
+        storagePassword:StoragePassword, 
+        recordType: RecordType,
+        query: RecordSearchQuery,
+        retrievalOptions:RecordSearchOptions,
+        count:number = 100
+    ):Promise<Array<StorageRecord>> {
+        try{
+            console.info(`Searching Records by query`, query, `and type ${recordType}`)
+
+            if(!this.#walletService.searchRecords){
+                throw new Error("searchRecords() Not Implemented")
+            }
+
+            const nonSecretsRecords:string = await this.#walletService.searchRecords(
+                storageName,
+                storagePassword,
+                recordType,
+                JSON.stringify(query),
+                JSON.stringify(retrievalOptions),
+                count
+            )
+            
+            console.info("Processing Record Search Results")
+
+            let parsedNonSecretsRecords = JSON.parse(nonSecretsRecords)
+            let processedRecords:Array<StorageRecord> = []
+
+            if(parsedNonSecretsRecords.records)
+            {
+                for(var i = 0; i < parsedNonSecretsRecords.records.length; i++){
+                    let record = parsedNonSecretsRecords.records[i]
+                    processedRecords[i] = {
+                        type: record.type,
+                        id: record.id,
+                        content: JSON.parse(record.value),
+                        tags: record.tags
+                    }
+                }
+            }
+
+            console.info("Retrieved Records:", processedRecords)
+            return processedRecords
         } catch (error){
             throw error
         }

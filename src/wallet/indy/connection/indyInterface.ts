@@ -1,4 +1,4 @@
-import { Static, Partial, Literal, Record, String, Null, Union } from 'runtypes'
+import { Static, Literal, Record, String, Null, Union, Boolean, Undefined } from 'runtypes'
 
 export const WalletConfig = Record({
     id: String,
@@ -33,6 +33,22 @@ export type PoolConfig = Static<typeof PoolConfig>
 export const PoolRuntimeConfig = String.Or(Null)
 export type PoolRuntimeConfig = Static<typeof PoolRuntimeConfig>
 
+//DIDs
+export const DIDKeyPair = Record({
+    did:String,
+    key:String,
+})
+export type DIDKeyPair = Static<typeof DIDKeyPair>
+
+export const DIDConfig = Record({
+    did: String.Or(Undefined),
+    seed: String.Or(Undefined), //UTF-8, base64, or hex
+    crypto_type: Union(Literal("ed25519")).Or(Undefined),
+    cid: Boolean.Or(Undefined),
+    method_name: String.Or(Undefined)
+})
+export type DIDConfig = Static<typeof DIDConfig>
+
 //Storage
 export const RecordType = String
 export type RecordType = Static<typeof RecordType>
@@ -50,6 +66,12 @@ export type RecordTags = Static<typeof RecordTags>
 //JamesKEbert TODO: use regex/schema to check JSON content
 export const RecordRetrievalOptions = String
 export type RecordRetrievalOptions = Static<typeof RecordRetrievalOptions>
+
+export const RecordSearchQuery = String
+export type RecordSearchQuery = Static<typeof RecordSearchQuery>
+
+export const RecordSearchOptions = String
+export type RecordSearchOptions = Static<typeof RecordSearchOptions>
 
 export default interface IndyInterface {
     /**
@@ -102,6 +124,11 @@ export default interface IndyInterface {
     openPool(configName:PoolConfigName, runtimeConfig:PoolRuntimeConfig):Promise<void>
     
     /**
+     * Creates a DID Key Pair
+     */
+    createAndStoreDID(walletName:WalletName, walletPassword:WalletPassword, DIDConfig:DIDConfig):Promise<DIDKeyPair>
+
+    /**
      * Adds a record
      */
     addRecord(
@@ -119,5 +146,14 @@ export default interface IndyInterface {
         recordType:RecordType,
         recordID:RecordID, 
         retrievalOptions:RecordRetrievalOptions
+    ):Promise<string>
+
+    searchRecords(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recordType:RecordType,
+        query:RecordSearchQuery,
+        retrievalOptions:RecordSearchOptions,
+        count:number
     ):Promise<string>
 }

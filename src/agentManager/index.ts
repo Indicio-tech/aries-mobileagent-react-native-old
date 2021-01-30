@@ -97,13 +97,27 @@ export default class AgentManager implements AgentManagerInterface {
                 this.#storageService
             );
 
-            //await agent.startup()
-
+            await agent.startup()
 
             //Fetch governance framework
 
             //Initiate Mediation connection
-        
+            if(creationParameters.defaultMediatorConfig){
+                //agent.connectionsService.receiveNewInvitation(creationParameters.defaultMediatorConfig.invite)
+                const invitation = await agent.connectionsService.receiveInvitation(
+                    creationParameters.defaultMediatorConfig.invite, 
+                    "mediation-recipient", 
+                    true
+                )
+                const connection = await agent.connectionsService.createConnectionByInvitationID(invitation.invitationID)
+                // await agent.mediationService.addMediator(
+                //     creationParameters.defaultMediatorConfig.invite, 
+                //     creationParameters.defaultMediatorConfig.endpoint,
+                //     creationParameters.defaultMediatorConfig.publicKey
+                // )
+                // agent.connectionsService
+            }
+
             const durationTime = Date.now() - startTime
             console.info(`Finished Agent Creation, took ${durationTime} milliseconds`)
             

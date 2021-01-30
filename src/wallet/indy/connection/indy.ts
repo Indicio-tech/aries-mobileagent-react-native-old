@@ -16,11 +16,15 @@ import IndyInterface, {
     PoolConfig, 
     PoolConfigName, 
     PoolRuntimeConfig,
+    DIDKeyPair,
+    DIDConfig,
     RecordType,
     RecordID,
     RecordValue,
     RecordTags,
-    RecordRetrievalOptions
+    RecordRetrievalOptions,
+    RecordSearchOptions,
+    RecordSearchQuery,
 } from './indyInterface'
 
 //Libindy Native Bridging
@@ -55,7 +59,7 @@ export default class IndyConnection implements IndyInterface {
     async createWallet(walletName:WalletName, walletPassword:WalletPassword):Promise<void> {
         try {   
             console.info("Creating Wallet")
-
+            
             //Check Permissions
             await storagePermissions()
 
@@ -228,6 +232,39 @@ export default class IndyConnection implements IndyInterface {
         }
     }
 
+    async createAndStoreDID(walletName:WalletName, walletPassword:WalletPassword, DIDConfig:DIDConfig):Promise<DIDKeyPair> {
+        try {   
+            console.info(`Creating a DID with config:`, DIDConfig)
+            
+            //Check Permissions
+            await storagePermissions()
+            //(JamesKEbert) TODO: Check network permissions/connectivity?
+
+            //Open up the pool
+            const DID:DIDKeyPair = await Indy.checkPool(
+                walletName, 
+                walletPassword,
+                JSON.stringify(DIDConfig)
+            )  
+            
+
+            return DID
+        } catch (error) {
+            //(JamesKEbert)TODO: Revise this
+            //Attempt to make into an error, if not possible, throw original error  
+            
+            var indyError;
+            try{
+                indyError = new IndyError(error.message);
+            } catch(e){
+                throw error
+            } 
+        
+            throw indyError
+        }
+    }
+
+
     async addRecord(
         walletName:WalletName, 
         walletPassword:WalletPassword,
@@ -244,7 +281,7 @@ export default class IndyConnection implements IndyInterface {
 
             const walletConfig = this._createWalletConfig(walletName, defaultStoragePath)
             const walletCredentials = this._createWalletCredentials(walletPassword)
-
+            console.log(recordTags)
             //Add Record
             await Indy.addRecord(
                 walletConfig, 
@@ -298,6 +335,49 @@ export default class IndyConnection implements IndyInterface {
             
             
             return record
+        } catch (error) {
+            //(JamesKEbert)TODO: Revise this
+            //Attempt to make into an error, if not possible, throw original error  
+            
+            var indyError;
+            try{
+                indyError = new IndyError(error.message);
+            } catch(e){
+                throw error
+            } 
+        
+            throw indyError
+        } 
+    }
+
+    async searchRecords(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recordType:RecordType,
+        query:RecordSearchQuery,
+        retrievalOptions:RecordSearchOptions = "{}",
+        count:number = 100
+    ):Promise<string> {
+        try {   
+            console.info(`Searching for records by query ${query} and type ${recordType}`)
+            
+            //Check Permissions
+            await storagePermissions()
+
+            const walletConfig = this._createWalletConfig(walletName, defaultStoragePath)
+            const walletCredentials = this._createWalletCredentials(walletPassword)
+
+            //Add Record
+            const records:string = await Indy.searchFetchNextRecords(
+                walletConfig, 
+                walletCredentials,
+                recordType,
+                query,
+                retrievalOptions,
+                count
+            )  
+            
+            return records
         } catch (error) {
             //(JamesKEbert)TODO: Revise this
             //Attempt to make into an error, if not possible, throw original error  

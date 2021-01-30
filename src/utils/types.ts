@@ -12,10 +12,5 @@ export const UUID = String.withConstraint((uuid) => {
 
 export type UUID = Static<typeof UUID>
 
-// const testUUID = uuidv4();
-// console.log(testUUID)
-// console.log(UUID.check(testUUID))
-// console.log(UUID.check("39393-344"))
-
 export const URLType = String
 export type URLType = Static<typeof URLType>

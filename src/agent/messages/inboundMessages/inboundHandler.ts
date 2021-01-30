@@ -1,11 +1,13 @@
-import InboundMessageHandlerInterface, { ProtocolURI } from './inboundHandlerInterface'
+import InboundMessageHandlerInterface, { MessageURI, MessageRouteCallbacks } from './inboundHandlerInterface'
 
 export default class InboundMessageHandler implements InboundMessageHandlerInterface {
+    #routeCallbacks:MessageRouteCallbacks = {}
+
     constructor(){
         console.info("Creating Inbound Message Handler");
     }
 
-    matchProtocol(URI: string){
+    _matchProtocol(URI: string){
         //Regex match to protocol message type identifiers - Only built for MTURIs currently - (https://github.com/hyperledger/aries-rfcs/tree/master/concepts/0003-protocols#message-type-and-protocol-identifier-uris)
         const regexMatchType = URI.match(
             /(.*?)([a-z0-9._-]+)\/(\d[^/]*)\/([a-z0-9._-]+)$/,
@@ -17,18 +19,21 @@ export default class InboundMessageHandler implements InboundMessageHandlerInter
 
         if (regexMatchType && protocol) {
             const matchedType = {
-            docURI: regexMatchType[1],
-            protocolName: regexMatchType[2],
-            version: regexMatchType[3],
-            messageName: regexMatchType[4],
+                docURI: regexMatchType[1],
+                protocolName: regexMatchType[2],
+                version: regexMatchType[3],
+                messageName: regexMatchType[4],
             }
             console.log(matchedType)
         }
     }
 
-    register(callbackFunction:Function, protocolURI:ProtocolURI):void {
-        console.info(`Registering Protocol callback for URI ${protocolURI}`)
-        callbackFunction()
+    register(messageURI:MessageURI, callbackFunction:Function):void {
+        console.info(`Registering Message callback for URI ${messageURI}`)
+        
+        //JamesKEbert TODO: Validate MessageURI
+        
+        this.#routeCallbacks[messageURI] = callbackFunction
     }
 }
 

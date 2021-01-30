@@ -1,4 +1,4 @@
-import { Static, Union, Literal, Record, String } from 'runtypes'
+import { Static, Union, Literal, Record, Boolean, String } from 'runtypes'
 import { UUID } from '../utils/types'
 
 export const StorageName = String
@@ -36,11 +36,23 @@ export const StorageRecord = Record({
 export type StorageRecord = Static<typeof StorageRecord>
 
 export const RecordRetrievalOptions = Record({
-    retrieveType:Union(Literal(true), Literal(false)),
-    retrieveValue:Union(Literal(true), Literal(false)),
-    retrieveTags:Union(Literal(true), Literal(false)),
+    retrieveType: Boolean,
+    retrieveValue: Boolean,
+    retrieveTags: Boolean,
 })
 export type RecordRetrievalOptions = Static<typeof RecordRetrievalOptions>
+
+export const RecordSearchQuery = Record({})
+export type RecordSearchQuery = Static<typeof RecordSearchQuery>
+
+export const RecordSearchOptions = Record({
+    retrieveRecords: Boolean,
+    retrieveTotalCount: Boolean,
+    retrieveType: Boolean,
+    retrieveValue: Boolean,
+    retrieveTags: Boolean,
+})
+export type RecordSearchOptions = Static<typeof RecordSearchOptions>
 
 export default interface StorageServiceInterface {
     storageServiceType:string,
@@ -64,5 +76,22 @@ export default interface StorageServiceInterface {
         recordID:RecordID,
         retrievalOptions:RecordRetrievalOptions
     ):Promise<StorageRecord>,
-    //searchRecords(),
+    
+    /**
+     * Search for records
+     * @param storageName 
+     * @param storagePassword 
+     * @param recordType 
+     * @param query 
+     * @param retrievalOptions 
+     * @param count 
+     */
+    searchRecords(
+        storageName:StorageName, 
+        storagePassword:StoragePassword, 
+        recordType: RecordType,
+        query: RecordSearchQuery,
+        retrievalOptions:RecordSearchOptions,
+        count:number
+    ):Promise<Array<StorageRecord>>
 }

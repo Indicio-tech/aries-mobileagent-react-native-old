@@ -20,6 +20,9 @@ Interoperability
 - [ ] Unit Tests
 - [ ] Error Handling Refactor
 
+To consider:  
+- [] Implicit Invitations
+
 ## App Requirements
 
 AMA-RN is built on React Native 0.61.5. Newer versions of React Native expierience issues with ZMQ (Fatal Signal 6 (SIGABRT)). 

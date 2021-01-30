@@ -16,6 +16,14 @@ export const LedgerGenesisString = String
 export type LedgerGenesisString = Static<typeof LedgerGenesisString>
 
 
+//DIDs
+export const DIDKeyPair = Record({
+    did:String,
+    key:String,
+})
+export type DIDKeyPair = Static<typeof DIDKeyPair>
+
+
 //Optional Storage Types
 export const StorageRecord = Record({
     type:String,
@@ -27,6 +35,12 @@ export type StorageRecord = Static<typeof StorageRecord>
 
 export const RecordRetrievalOptions = String
 export type RecordRetrievalOptions = Static<typeof RecordRetrievalOptions>
+
+export const RecordSearchQuery = String
+export type RecordSearchQuery = Static<typeof RecordSearchQuery>
+
+export const RecordSearchOptions = String
+export type RecordSearchOptions = Static<typeof RecordSearchOptions>
 
 export default interface WalletServiceInterface {
     walletServiceType:string
@@ -74,6 +88,12 @@ export default interface WalletServiceInterface {
     generateMasterSecretID():Promise<MasterSecretID>
 
     /**
+     * Create a DID Key pair
+     * @returns promise of a DID Key Pair
+     */
+    createDID(walletName:WalletName, walletPassword:WalletPassword):Promise<DIDKeyPair>
+
+    /**
      * Optional method for storing records in the wallet (such as non secrets in the indy-sdk)
      * @param walletName
      * @param walletPassword
@@ -92,5 +112,14 @@ export default interface WalletServiceInterface {
         recordType: string,
         recordID: string,
         retrievalOptions:RecordRetrievalOptions
+    ):Promise<string>
+
+    searchRecords?(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recordType: string,
+        query:RecordSearchQuery,
+        retrievalOptions:RecordSearchOptions,
+        count:number
     ):Promise<string>
 }

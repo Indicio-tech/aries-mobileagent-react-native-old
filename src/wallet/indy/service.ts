@@ -4,7 +4,7 @@ import * as AgentErrors from '../../errors'
 
 import storagePermissions from '../../permissions'
 
-import WalletServiceInterface, {WalletName, WalletPassword, MasterSecretID, LedgerConfigName, LedgerGenesisString, StorageRecord, RecordRetrievalOptions} from '../index'
+import WalletServiceInterface, { WalletName, WalletPassword, MasterSecretID, LedgerConfigName, LedgerGenesisString, StorageRecord, RecordRetrievalOptions, RecordSearchQuery, RecordSearchOptions, DIDKeyPair } from '../index'
 
 import IndyConnection from './connection/indy'
 
@@ -71,6 +71,28 @@ export default class IndyService implements WalletServiceInterface {
         return uuidv4()
     }
 
+    //JamesKEbert TODO: Expose Wallet seed creation/other arguments desired
+    async createDID(walletName:WalletName, walletPassword:WalletPassword):Promise<DIDKeyPair> {
+        console.info("Creating DID")
+        
+        const DID:DIDKeyPair = await this.#indy.createAndStoreDID(
+            walletName, 
+            walletPassword,
+            {
+                did:undefined,
+                seed:undefined,
+                crypto_type:'ed25519',
+                cid:false,
+                method_name:undefined
+            }
+        )
+
+        console.info("Created DID Key Pair", DID)
+
+        return DID
+    }
+
+
     async storeRecord(
         walletName:WalletName, 
         walletPassword:WalletPassword, 
@@ -101,4 +123,23 @@ export default class IndyService implements WalletServiceInterface {
             retrievalOptions
         )
     }
+
+    async searchRecords(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recordType: string,
+        query:RecordSearchQuery,
+        retrievalOptions:RecordSearchOptions,
+        count:number = 100
+    ):Promise<string> {
+        return await this.#indy.searchRecords(
+            walletName, 
+            walletPassword,
+            recordType,
+            query,
+            retrievalOptions,
+            count
+        )
+    }
+        
 }
