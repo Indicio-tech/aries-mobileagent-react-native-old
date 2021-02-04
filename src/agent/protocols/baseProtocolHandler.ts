@@ -1,4 +1,4 @@
-import InboundMessageHandler from '../messages/inboundMessages/inboundHandlerInterface'
+import { InboundMessageHandler } from '../messages'
 
 import ProtocolHandlerInterface, { HandlerIdentifier, MessageRouteCallbacks } from './protocolHandlerInterface'
 
@@ -9,7 +9,7 @@ export default class BaseProtocolHandler implements ProtocolHandlerInterface {
 
     constructor(
         handlerIdentifier:HandlerIdentifier, 
-        inboundMessageHandler:InboundMessageHandler
+        inboundMessageHandler:InboundMessageHandler,
     ){
         this.handlerIdentifier = handlerIdentifier
 

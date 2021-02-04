@@ -1,4 +1,4 @@
-import { Static, Literal, Record, String, Null, Union, Boolean, Undefined } from 'runtypes'
+import { Static, Literal, Record, String, Null, Union, Boolean, Undefined, Partial } from 'runtypes'
 
 export const WalletConfig = Record({
     id: String,
@@ -40,13 +40,13 @@ export const DIDKeyPair = Record({
 })
 export type DIDKeyPair = Static<typeof DIDKeyPair>
 
-export const DIDConfig = Record({
-    did: String.Or(Undefined),
-    seed: String.Or(Undefined), //UTF-8, base64, or hex
-    crypto_type: Union(Literal("ed25519")).Or(Undefined),
-    cid: Boolean.Or(Undefined),
-    method_name: String.Or(Undefined)
-})
+export const DIDConfig = Record({}).And(Partial({
+    did: String,
+    seed: String, //UTF-8, base64, or hex
+    crypto_type: Union(Literal("ed25519")),
+    cid: Boolean,
+    method_name: String
+}))
 export type DIDConfig = Static<typeof DIDConfig>
 
 //Storage
@@ -126,7 +126,35 @@ export default interface IndyInterface {
     /**
      * Creates a DID Key Pair
      */
-    createAndStoreDID(walletName:WalletName, walletPassword:WalletPassword, DIDConfig:DIDConfig):Promise<DIDKeyPair>
+    createAndStoreMyDID(walletName:WalletName, walletPassword:WalletPassword, DIDConfig:DIDConfig):Promise<DIDKeyPair>
+
+    /**
+     * Packs a message for sending to recipients with the supplied verkeys
+     * @param walletName Name of wallet to alter
+     * @param walletPassword Password of wallet
+     * @param recipientKeys The keys to encrypt the message for
+     * @param senderVerkey The Agent's verkey to encrypt the message with
+     * @param message The message to encrypt
+     */
+    packMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        recipientKeys:string[],
+        senderVerkey:string,
+        message:string
+    ):Promise<Buffer>
+
+    /**
+     * Unpacks a message
+     * @param walletName Name of wallet to alter
+     * @param walletPassword Password of wallet
+     * @param message The unencrypted message
+     */
+    unpackMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        message:string
+    ):Promise<string>
 
     /**
      * Adds a record

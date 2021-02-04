@@ -1,5 +1,14 @@
 import {Static, Record, String, Literal, Array, Union} from 'runtypes'
-import { URLType } from '../../../utils/types'
+import { URLType, UUID } from '../../../utils/types'
+
+export const WalletName = String
+export type WalletName = Static<typeof WalletName>
+
+export const WalletPassword = String
+export type WalletPassword = Static<typeof WalletPassword>
+
+export const MediatorID = UUID
+export type MediatorID = Static<typeof MediatorID>
 
 export const MediationStatus = Union(
     Literal("not-mediating"), 
@@ -9,7 +18,14 @@ export const MediationStatus = Union(
 )
 export type MediationStatus = Static<typeof MediationStatus>
 
+export const MediationStates = Union(
+    Literal("keylist-update-sent"), 
+    Literal("keylist-update-responded"), 
+)
+export type MediationStates = Static<typeof MediationStates>
+
 export const MediationDetails = Record({
+   // mediator
     status: MediationStatus,
     endpoint: URLType,
     routingKeys: Array(String)

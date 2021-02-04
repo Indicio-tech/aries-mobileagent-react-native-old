@@ -1,5 +1,12 @@
 import {Record, Static, String} from 'runtypes'
 
+export const WalletName = String
+export type WalletName = Static<typeof WalletName>
+
+export const WalletPassword = String
+export type WalletPassword = Static<typeof WalletPassword>
+
+
 export const MessageURI = String
 export type MessageURI = Static<typeof MessageURI>
 
@@ -17,6 +24,16 @@ export type MessageRouteCallbacks = {
     [route:string]:Function
 }
 
+export const EncryptedMessage = Record({
+    ciphertext: String,
+    iv: String,
+    protected: String,
+    tag: String
+})
+export type EncryptedMessage = Static<typeof EncryptedMessage>
+
+
 export default interface InboundMessageHandlerInterface {
     register(messageURI:MessageURI, callbackFunction:Function):void
+    newInboundMessage(rawMessage:EncryptedMessage):Promise<void>
 }

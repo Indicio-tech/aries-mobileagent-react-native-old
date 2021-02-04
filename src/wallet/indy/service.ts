@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { Verkey } from '../../agent/services/dids/didServiceInterface'
 
 import * as AgentErrors from '../../errors'
 
@@ -75,16 +76,10 @@ export default class IndyService implements WalletServiceInterface {
     async createDID(walletName:WalletName, walletPassword:WalletPassword):Promise<DIDKeyPair> {
         console.info("Creating DID")
         
-        const DID:DIDKeyPair = await this.#indy.createAndStoreDID(
+        const DID:DIDKeyPair = await this.#indy.createAndStoreMyDID(
             walletName, 
             walletPassword,
-            {
-                did:undefined,
-                seed:undefined,
-                crypto_type:'ed25519',
-                cid:false,
-                method_name:undefined
-            }
+            {}
         )
 
         console.info("Created DID Key Pair", DID)
@@ -92,6 +87,42 @@ export default class IndyService implements WalletServiceInterface {
         return DID
     }
 
+
+    async packMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recipientKeys:string[],
+        senderVerkey:string,
+        message:string
+    ):Promise<Buffer> {
+        console.info("Packing Message")
+        
+        const packedMessage:Buffer = await this.#indy.packMessage(
+            walletName, 
+            walletPassword,
+            recipientKeys,
+            senderVerkey,
+            message
+        )
+
+        return packedMessage
+    }
+
+    async unpackMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        message:string
+    ):Promise<string> {
+        console.info("Unpacking Message")
+        
+        const unpackedMessage:string = await this.#indy.unpackMessage(
+            walletName, 
+            walletPassword,
+            message
+        )
+
+        return unpackedMessage
+    }
 
     async storeRecord(
         walletName:WalletName, 

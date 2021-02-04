@@ -140,6 +140,7 @@ public class IndyModule extends ReactContextBaseJavaModule implements LifecycleE
       Log.d(TAG, "Wallet is null");
       try {
         wallet = Wallet.openWallet(walletConfigJson.toString(), walletCredentialsJson.toString()).get();
+        //Log.d(TAG, String.valueOf(wallet.getWalletHandle()));
       } catch (Exception e) {
         //TODO(JamesKEbert): Add logging vs error throwing
         Log.e(TAG, "Error Closing Wallet", e);

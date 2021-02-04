@@ -1,10 +1,34 @@
-import InboundMessageHandlerInterface, { MessageURI, MessageRouteCallbacks } from './inboundHandlerInterface'
+import HTTP from '../../../transports/http/http'
+import InboundMessageHandlerInterface, { WalletName, WalletPassword, MessageURI, MessageRouteCallbacks, EncryptedMessage } from './inboundHandlerInterface'
+
+//Wallet Dependencies
+import WalletServiceInterface from '../../../wallet'
+
+//Storage Dependencies
+import StorageServiceInterface from '../../../storage'
+
 
 export default class InboundMessageHandler implements InboundMessageHandlerInterface {
+    #walletService:WalletServiceInterface
+    #storageService:StorageServiceInterface
+    
+    #walletName:WalletName
+    #walletPassword:WalletPassword
+
     #routeCallbacks:MessageRouteCallbacks = {}
 
-    constructor(){
+    constructor(
+        walletService:WalletServiceInterface,
+        storageService:StorageServiceInterface,
+        walletName:WalletName,
+        walletPassword:WalletPassword
+    ){
         console.info("Creating Inbound Message Handler");
+
+        this.#walletService = walletService
+        this.#storageService = storageService
+        this.#walletName = walletName
+        this.#walletPassword = walletPassword
     }
 
     _matchProtocol(URI: string){
@@ -34,6 +58,18 @@ export default class InboundMessageHandler implements InboundMessageHandlerInter
         //JamesKEbert TODO: Validate MessageURI
         
         this.#routeCallbacks[messageURI] = callbackFunction
+    }
+
+    async newInboundMessage(rawMessage:EncryptedMessage):Promise<void> {
+        console.info("Received new message, Raw:", rawMessage)
+        console.log(this.#walletService)
+        const unpackedMessage = await this.#walletService.unpackMessage(
+            this.#walletName, 
+            this.#walletPassword, 
+            JSON.stringify(rawMessage)
+        )
+
+        console.info("Unpacked message: ", unpackedMessage)
     }
 }
 

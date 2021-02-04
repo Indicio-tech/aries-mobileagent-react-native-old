@@ -232,7 +232,7 @@ export default class IndyConnection implements IndyInterface {
         }
     }
 
-    async createAndStoreDID(walletName:WalletName, walletPassword:WalletPassword, DIDConfig:DIDConfig):Promise<DIDKeyPair> {
+    async createAndStoreMyDID(walletName:WalletName, walletPassword:WalletPassword, DIDConfig:DIDConfig):Promise<DIDKeyPair> {
         try {   
             console.info(`Creating a DID with config:`, DIDConfig)
             
@@ -241,7 +241,7 @@ export default class IndyConnection implements IndyInterface {
             //(JamesKEbert) TODO: Check network permissions/connectivity?
 
             //Open up the pool
-            const DID:DIDKeyPair = await Indy.checkPool(
+            const DID:DIDKeyPair = await Indy.createAndStoreMyDid(
                 walletName, 
                 walletPassword,
                 JSON.stringify(DIDConfig)
@@ -264,6 +264,81 @@ export default class IndyConnection implements IndyInterface {
         }
     }
 
+    async packMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        recipientKeys:string[],
+        senderVerkey:string,
+        message:string
+    ):Promise<Buffer> {
+        try {   
+            console.info(`Packing Message`)
+            
+            //Check Permissions
+            await storagePermissions()
+
+            //Pack Message
+            const packedMessage:any = await Indy.packMessage(
+                walletName, 
+                walletPassword,
+                recipientKeys,
+                senderVerkey,
+                message
+            )  
+            
+            const bufferedMessage:Buffer = Buffer.from(packedMessage)
+
+            return bufferedMessage
+        } catch (error) {
+            //(JamesKEbert)TODO: Revise this
+            //Attempt to make into an error, if not possible, throw original error  
+            
+            var indyError;
+            try{
+                indyError = new IndyError(error.message);
+            } catch(e){
+                throw error
+            } 
+        
+            throw indyError
+        }
+    }
+
+    async unpackMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        message:string
+    ):Promise<string> {
+        try {   
+            console.info(`Unpacking Message`)
+            
+            //Check Permissions
+            await storagePermissions()
+
+            //Pack Message
+            const unpackedMessage:string = await Indy.unpackMessage(
+                walletName, 
+                walletPassword,
+                message
+            )  
+            
+            console.log(unpackedMessage)
+
+            return unpackedMessage
+        } catch (error) {
+            //(JamesKEbert)TODO: Revise this
+            //Attempt to make into an error, if not possible, throw original error  
+            
+            var indyError;
+            try{
+                indyError = new IndyError(error.message);
+            } catch(e){
+                throw error
+            } 
+        
+            throw indyError
+        }
+    }
 
     async addRecord(
         walletName:WalletName, 
@@ -281,7 +356,7 @@ export default class IndyConnection implements IndyInterface {
 
             const walletConfig = this._createWalletConfig(walletName, defaultStoragePath)
             const walletCredentials = this._createWalletCredentials(walletPassword)
-            console.log(recordTags)
+            
             //Add Record
             await Indy.addRecord(
                 walletConfig, 

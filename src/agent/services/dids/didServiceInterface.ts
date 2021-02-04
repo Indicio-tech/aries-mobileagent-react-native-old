@@ -1,4 +1,4 @@
-import { Static, Record, String, Array, Literal, Union, Undefined, Number } from 'runtypes'
+import { Static, Record, String, Array, Literal, Union, Undefined, Number, Partial } from 'runtypes'
 import { URLType } from '../../../utils/types'
 
 export const WalletName = String
@@ -7,17 +7,22 @@ export type WalletName = Static<typeof WalletName>
 export const WalletPassword = String
 export type WalletPassword = Static<typeof WalletPassword>
 
-export const DID = String
+export const DID = String //Such as: did:method:QUmsj7xwB82QAuuzfmvhAi
 export type DID = Static<typeof DID>
 
-export const DIDKeyReference = String
+//Such as: did:method:QUmsj7xwB82QAuuzfmvhAi#1 
+//or: did:method:QUmsj7xwB82QAuuzfmvhAi#did-communciation
+export const DIDKeyReference = String 
 export type DIDKeyReference = Static<typeof DIDKeyReference>
-
-export const DIDWithType = String
-export type DIDWithType = Static<typeof DIDWithType>
 
 export const Verkey = String
 export type Verkey = Static<typeof Verkey>
+
+export const DIDKeyPair = Record({
+    did:DID,
+    key:Verkey
+})
+export type DIDKeyPair = Static<typeof DIDKeyPair>
 
 export const PublicKey = Record({
     id: DIDKeyReference,
@@ -27,21 +32,29 @@ export const PublicKey = Record({
 })
 export type PublicKey = Static<typeof PublicKey>
 
+
 export const AuthenticationMethod = Record({
     type: Literal('Ed25519VerificationKey2018'),
     publicKey: DIDKeyReference
 })
 export type AuthenticationMethod = Static<typeof AuthenticationMethod>
 
+
+export const ServiceEndpoint = URLType
+export type ServiceEndpoint = Static<typeof ServiceEndpoint>
+
 export const Service = Record({
-    id: DIDWithType,
-    type: Union(Literal("did-communication")).Or(Undefined),
+    id: DIDKeyReference,
     priority: Number,
     recipientKeys: Array(Verkey), //JamesKEbert TODO: Replace with DID Key references: //Array(DIDKeyReference),
+    serviceEndpoint: ServiceEndpoint //JamesKEbert TODO: Add DID endpoint support
+}).And(Partial({
     routingKeys: Array(Verkey), //JamesKEbert TODO: Replace with DID Key references: //Array(DIDKeyReference),
-    serviceEndpoint: URLType //JamesKEbert TODO: Add DID endpoint support
-})
+    type: Union(Literal("did-communication")),
+}))
 export type Service = Static<typeof Service>
+
+
 
 export const DIDDoc = Record({
     "@context":String,
@@ -52,6 +65,20 @@ export const DIDDoc = Record({
 })
 export type DIDDoc = Static<typeof DIDDoc>
 
+
 export default interface DIDServiceInterface {
-    
+    /**
+     * Create a new DID Key Pair
+     * @returns a DID Key Pair
+     */
+    createNewDID():Promise<DIDKeyPair>
+
+    /**
+     * Creates a DIDDoc
+     * @param didKeyPair A DID Key Pair
+     * @param serviceEndpoint The Agent service endpoint
+     * @param routingKeys The routing keys to communicate with the agent
+     * @returns a promise of a DIDDoc
+     */
+    createDIDDoc(didKeyPair:DIDKeyPair, serviceEndpoint:ServiceEndpoint, routingKeys:Verkey[]):Promise<DIDDoc>
 }

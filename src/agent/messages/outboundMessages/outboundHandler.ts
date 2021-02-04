@@ -1,8 +1,36 @@
-import OutBoundMessageHandlerInterface from './outboundHandlerInterface'
+import OutBoundMessageHandlerInterface, { WalletName, WalletPassword} from './outboundHandlerInterface'
+import HTTP from '../../../transports/http/http'
+
+//Wallet Dependencies
+import WalletServiceInterface from '../../../wallet'
+
+//Storage Dependencies
+import StorageServiceInterface from '../../../storage'
+
+import InboundMessageHandler from '../inboundMessages/inboundHandlerInterface'
 
 export default class OutBoundMessageHandler implements OutBoundMessageHandlerInterface {
-    constructor(){
+    #walletService:WalletServiceInterface
+    #storageService:StorageServiceInterface
+    #inboundMessageHandler:InboundMessageHandler
+
+    #walletName:WalletName
+    #walletPassword:WalletPassword
+
+    constructor(
+        walletService:WalletServiceInterface,
+        storageService:StorageServiceInterface,
+        inboundMessageHandler:InboundMessageHandler,
+        walletName:WalletName,
+        walletPassword:WalletPassword
+    ){
         console.info("Creating Outbound Message Handler");
+
+        this.#walletService = walletService
+        this.#storageService = storageService
+        this.#inboundMessageHandler = inboundMessageHandler
+        this.#walletName = walletName
+        this.#walletPassword = walletPassword
     }
 
     matchProtocol(URI: string){
@@ -24,6 +52,36 @@ export default class OutBoundMessageHandler implements OutBoundMessageHandlerInt
             }
             console.log(matchedType)
         }
+    }
+
+    async sendMessage(
+        endpoint:string, 
+        message:{}, 
+        recipientKeys:string[], 
+        senderVerkey:string,
+        routingKeys:string[] = [],
+    ):Promise<void> {
+        console.info(`Preparing Message to send to ${endpoint}`, message)
+
+        //Store Message
+
+        //Process Message
+        const messageString = JSON.stringify(message)
+
+        const packedMessage:Buffer = await this.#walletService.packMessage(
+            this.#walletName, 
+            this.#walletPassword, 
+            recipientKeys, 
+            senderVerkey, 
+            messageString
+        )
+
+        //console.log(packedMessage)
+        //console.log(Buffer.from(packedMessage).toString('utf-8'))
+        console.info("Packed Message to send", JSON.parse(Buffer.from(packedMessage).toString('utf-8')))
+
+        await HTTP.sendOutboundMessage(packedMessage, endpoint, this.#inboundMessageHandler
+            .newInboundMessage)
     }
 }
 

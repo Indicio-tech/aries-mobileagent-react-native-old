@@ -94,6 +94,36 @@ export default interface WalletServiceInterface {
     createDID(walletName:WalletName, walletPassword:WalletPassword):Promise<DIDKeyPair>
 
     /**
+     * Packs a message for sending to recipients with the supplied verkeys
+     * @param walletName Name of wallet to alter
+     * @param walletPassword Password of wallet
+     * @param recipientKeys The keys to encrypt the message for
+     * @param senderVerkey The Agent's verkey to encrypt the message with
+     * @param message The message to encrypt
+     * @returns A buffer of the encrypted message. Can use Buffer.from(buffer).toString('utf-8') to get out a string of the encrypted message.
+     */
+    packMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword,
+        recipientKeys:string[],
+        senderVerkey:string,
+        message:string
+    ):Promise<Buffer>
+
+    /**
+     * Unpacks a message
+     * @param walletName Name of wallet to alter
+     * @param walletPassword Password of wallet
+     * @param message The unencrypted message
+     * @returns A string of the unencrypted message
+     */
+    unpackMessage(
+        walletName:WalletName, 
+        walletPassword:WalletPassword, 
+        message:string
+    ):Promise<string>
+
+    /**
      * Optional method for storing records in the wallet (such as non secrets in the indy-sdk)
      * @param walletName
      * @param walletPassword

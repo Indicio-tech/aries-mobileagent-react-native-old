@@ -1,27 +1,32 @@
+import { v4 as uuidv4 } from 'uuid'
 import { InboundMessageHandler, OutboundMessageHandler } from '../../messages'
-import ConnectionsService, { InternalService } from '../../services/connections/connectionsServiceInterface'
+import ConnectionsService, { Connection, Service } from '../../services/connections/connectionsServiceInterface'
+import { DIDDoc } from '../../services/dids/didServiceInterface'
 
 import BaseProtocolHandler from '../baseProtocolHandler'
 import ConnectionsHandlerInterface from './connectionsInterface'
 
-import { Invitation, PublicDIDInvitation } from './messages'
+import { Invitation, PublicDIDInvitation, ConnectionRequest } from './messages'
 
 export default class ConnectionsHandler extends BaseProtocolHandler implements ConnectionsHandlerInterface {
     #connectionsService:ConnectionsService
+    #outboundMessageHandler:OutboundMessageHandler
 
-    constructor(inboundMessageHandler:InboundMessageHandler, connectionsService:ConnectionsService){
+    constructor(inboundMessageHandler:InboundMessageHandler, outboundMessageHandler:OutboundMessageHandler,connectionsService:ConnectionsService){
         super("connections-1.0", inboundMessageHandler)
 
         //Setup necessary services
+        this.#outboundMessageHandler = outboundMessageHandler
         this.#connectionsService = connectionsService
 
         //Setup message routes
         // this.registerMessages({
         //     "https://didcomm.org/connections/1.0/response": this.response
+        //did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/invitation
         // })
     }
 
-    async processInvitation(invitation:Invitation):Promise<InternalService> {
+    async processInvitation(invitation:Invitation):Promise<Service> {
         try{
             //Validate Message
             Invitation.check(invitation)
@@ -44,5 +49,44 @@ export default class ConnectionsHandler extends BaseProtocolHandler implements C
             console.log(error)
             throw new Error("Error while processing invitation")
         }
+    }
+
+    async sendRequest(
+        label:string, 
+        didDoc:DIDDoc, 
+        endpoint:string, 
+        recipientKeys:string[], 
+        senderVerkey:string,
+        routingKeys:string[] = [],
+        returnRoute:boolean = false,
+    ):Promise<void> {
+        console.info("Sending connection request")
+
+        let request:ConnectionRequest = {
+            "@type": "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0/request",
+            "@id": uuidv4(),
+            label:label,
+            connection:{
+                DID:didDoc.id,
+                DIDDoc:didDoc
+            },
+        }
+
+        if(returnRoute){
+            request = {
+                ...request,
+                '~transport': {
+                    return_route: 'all',
+                },
+            }
+        }
+
+        if(!ConnectionRequest.guard(request)){
+            throw new Error("Connection request was not created correctly")
+        }
+
+        console.info("Created Connection Request", request)
+
+        await this.#outboundMessageHandler.sendMessage(endpoint, request, recipientKeys, senderVerkey, routingKeys)
     }
 }

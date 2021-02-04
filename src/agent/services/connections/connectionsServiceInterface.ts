@@ -1,7 +1,7 @@
-import { Static, Record, String, Union, Literal, Boolean, Number, Null, Undefined, Array } from 'runtypes'
+import { Static, Record, String, Union, Literal, Partial, Boolean, Number, Null, Undefined, Array } from 'runtypes'
 import { UUID, URLType } from '../../../utils/types'
-
-import { MediationDetails } from '../mediation/mediatorServiceInterface'
+import { DIDDoc, DIDKeyPair } from '../dids/didServiceInterface'
+import { MediatorID } from '../mediation/mediatorServiceInterface'
 
 import { Invitation } from '../../protocols/connections/messages'
 
@@ -15,16 +15,17 @@ export type WalletPassword = Static<typeof WalletPassword>
 export const ConnectionRoles = Union(Literal("mediation-recipient"), Literal("peer"))
 export type ConnectionRoles = Static<typeof ConnectionRoles>
 
+
 //Invitation Records
 export const InvitationID = UUID
 export type InvitationID = Static<typeof InvitationID>
 
-export const InternalService = Record({
+export const Service = Record({
     recipientKeys: Array(String),
     routingKeys: Array(String),
     serviceEndpoint: URLType
 })
-export type InternalService = Static<typeof InternalService>
+export type Service = Static<typeof Service>
 
 export const InvitationUses = Union(Literal("multi-use"), Number)
 export type InvitationUses = Static<typeof InvitationUses>
@@ -33,25 +34,38 @@ export const InvitationRecord = Record({
     invitationID: InvitationID,
     origin: Union(Literal("local"), Literal("external")),
     role: ConnectionRoles,
-    service: InternalService,
+    service: Service,
     invitation: Invitation,
     rawInvitation: String,
-    autoConnect: Boolean,
     uses: InvitationUses,
-})
+}).And(Partial({
+    autoConnect: Boolean,
+}))
 export type InvitationRecord = Static<typeof InvitationRecord>
 
+
+//Mediation Records
+export const MediationStates = Union(
+    Literal("not-mediated"), 
+    Literal("keylist-update-sent"), 
+    Literal("mediated"), 
+)
+export type MediationStates = Static<typeof MediationStates>
+
+export const MediationDetails = Record({
+    // mediator
+    mediator: MediatorID.Or(Null),
+    state: MediationStates,
+})
+export type MediationDetails = Static<typeof MediationDetails>
 
 
 //Connection Records
 export const ConnectionID = UUID
 export type ConnectionID = Static<typeof ConnectionID>
 
-export const DIDDoc = Record({})
-export type DIDDoc = Static<typeof DIDDoc>
-
 export const ConnectionStates = Union(
-    Literal("initiated"),
+    Literal("invite-received"),
     Literal("request-sent"),
     Literal("response-received"),
     Literal("connected"),
@@ -68,14 +82,15 @@ export const Connection = Record({
     connectionID: ConnectionID,
     role: ConnectionRoles,
     state: ConnectionStates,
-    agentVerkey: String,
-    agentDIDDoc: DIDDoc.Or(Null),
-    externalService: InternalService,
+    agentDIDKeyPair: DIDKeyPair,
+    agentDIDDoc: DIDDoc,
+    internalService: Service,
     externalDIDDoc: DIDDoc.Or(Null),
+    externalService: Service,
     invitationID: UUID,
     createdAt: String,
     updatedAt: String,
-    mediation: MediationDetails.Or(Undefined),
+    mediation: MediationDetails,
 })
 export type Connection = Static<typeof Connection>
 
@@ -92,6 +107,7 @@ export default interface ConnectionsServiceInterface {
     // updateInvitation():Promise<void>
 
     createConnectionByInvitationID(invitationID:InvitationID):Promise<Connection>
+    sendRequest(connection:Connection, label:string, returnRoute:boolean):Promise<void>
     // createConnectionRecord():Promise<ConnectionID>
     // storeConnectionRecord():Promise<void>
     // getConnectionRecord():Promise<Connection>

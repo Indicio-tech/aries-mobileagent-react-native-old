@@ -106,10 +106,9 @@ export default class AgentManager implements AgentManagerInterface {
                 //agent.connectionsService.receiveNewInvitation(creationParameters.defaultMediatorConfig.invite)
                 const invitation = await agent.connectionsService.receiveInvitation(
                     creationParameters.defaultMediatorConfig.invite, 
-                    "mediation-recipient", 
-                    true
+                    "mediation-recipient"
                 )
-                const connection = await agent.connectionsService.createConnectionByInvitationID(invitation.invitationID)
+                const connectionID = await agent.connectionsService.acceptInvitation(invitation.invitationID)
                 // await agent.mediationService.addMediator(
                 //     creationParameters.defaultMediatorConfig.invite, 
                 //     creationParameters.defaultMediatorConfig.endpoint,
