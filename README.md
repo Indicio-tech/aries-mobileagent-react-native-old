@@ -3,11 +3,6 @@ Aries Mobile Agent React Native is an Aries Mobile Agent written to create an in
 
 Note: This project was developed in parallel to [this project](https://github.com/animo/aries-mobile-agent-react-native) at Animo. We intend to work with the community to address project naming conventions as the number of projects increases within the Aries community. 
 
-Library core values:
-Plugability/Flexability
-Ease of use
-Interoperability
-
 ### Coming Soon: Quick Start
 A part of this project is the development of a sample app that can be used as a reference for AMA-RN usage as well as UI best practices. 
 Head to the [AMARN-Sample-App repo](https://github.com/Indicio-tech/aries-mobileagent-react-native-sample-app) for instructions to get started running an agent quickly, including APKs to just walk through the app.
@@ -15,7 +10,9 @@ Head to the [AMARN-Sample-App repo](https://github.com/Indicio-tech/aries-mobile
 ## Future Work / Roadmap
 
 - [x] Modify and utilize [updated mediation capabilities](https://github.com/hyperledger/aries-rfcs/blob/master/features/0211-route-coordination/README.md) supported by ACA-Py (added v0.1.0).
-- [ ] Basic Message Protocol Handling (estimated 2/10)
+- [ ] Basic Message Protocol Handling 
+    - [x] Basic Message Protocol Handler (added v0.1.0)
+    - [ ] Basic Message Service (estimated 2/16)
 - [ ] Invitation Generation (estimated 2/11).
 - [ ] Identify Dependency Injection / Plugin strategy
     - [ ] Circular dependencies
@@ -27,6 +24,7 @@ Head to the [AMARN-Sample-App repo](https://github.com/Indicio-tech/aries-mobile
 - [ ] Access and consume machine readable governance frameworks.
 - [ ] Modify storage mechanisms.
     - [ ] Investigate Indy non_secrets database replacement
+- [ ] Return Route Decorator
 - [ ] Out of Band (OOB) support.
     - [ ] did:key support.
     - [ ] DID Exchange support.
@@ -163,6 +161,9 @@ Additional documentation can be found in the [`docs folder`](https://github.com/
 
 #### Hot Reloading
 Hot reloading may not work correctly with instantiated Agent objects. Reloading (`r`) will work. Any changes made to native modules require you to re-run `npx react-native run-android`.
+
+#### Mediator ID Issues
+There is a known issue that while in development that doesn't open a new wallet, which causes issues with the Mediator IDs. You can work around this issue by closing the app and reopening the app when refreshing changes. Fixes are in progress to address this.
 
 #### Dependency Issues, Native Module Linking Issues, or Usage Issues
 If you end up changing dependencies or structures, you may need to perform the following steps:

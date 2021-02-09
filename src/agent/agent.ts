@@ -20,6 +20,7 @@ import ProtocolHandlerInterface from './protocols/baseProtocolHandler'
 import ConnectionsHandler from './protocols/connections/connections'
 import TrustPingHandler from './protocols/trustPing/trustPing'
 import CoordinateMediationHandler from './protocols/coordinateMediation/coordinateMediation'
+import BasicMessageHandler from './protocols/basicMessage/basicMessage'
 
 import AgentInterface, {
   WalletName,
@@ -47,6 +48,7 @@ export default class Agent implements AgentInterface {
     [ConnectionsHandler.handlerIdentifier]: ConnectionsHandler,
     [TrustPingHandler.handlerIdentifier]: TrustPingHandler,
     [CoordinateMediationHandler.handlerIdentifier]: CoordinateMediationHandler,
+    [BasicMessageHandler.handlerIdentifier]: BasicMessageHandler,
   }
 
   mediation: typeof MediationService.adminAPI = MediationService.adminAPI
@@ -63,11 +65,13 @@ export default class Agent implements AgentInterface {
     this.#walletPassword = walletPassword
     this.#masterSecretID = masterSecretID
 
+    //Register protocol message handlers
     ConnectionsHandler.registerMessages(ConnectionsHandler.messageCallbacks)
     TrustPingHandler.registerMessages(TrustPingHandler.messageCallbacks)
     CoordinateMediationHandler.registerMessages(
       CoordinateMediationHandler.messageCallbacks,
     )
+    BasicMessageHandler.registerMessages(BasicMessageHandler.messageCallbacks)
   }
 
   async startup(): Promise<void> {
