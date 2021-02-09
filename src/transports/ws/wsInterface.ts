@@ -1,5 +1,3 @@
-import TransportMessagingInterface from "../transportsInterface";
+import TransportMessagingInterface from '../transportsInterface'
 
-export default interface WSInterface extends TransportMessagingInterface {
-    
-}
+export default interface WSInterface extends TransportMessagingInterface {}

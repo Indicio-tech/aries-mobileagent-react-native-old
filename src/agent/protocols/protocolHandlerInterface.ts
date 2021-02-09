@@ -5,9 +5,9 @@ export const HandlerIdentifier = String
 export type HandlerIdentifier = Static<typeof HandlerIdentifier>
 
 export type MessageRouteCallbacks = {
-    [route:string]:Function
+  [route: string]: Function
 }
 
 export default interface ProtocolHandlerInterface {
-    handlerIdentifier:HandlerIdentifier
+  handlerIdentifier: HandlerIdentifier
 }

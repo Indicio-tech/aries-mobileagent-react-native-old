@@ -7,9 +7,9 @@
   "types": "./build/index.d.ts",
   "scripts": {
     "typescript-watch": "tsc --watch",
-    "style-watch": "onchange '**/*.js' -- prettier --write {{changed}}",
-    "style-check": "prettier --check '**/*.js'",
-    "style-format": "prettier --write '**/*.js'",
+    "style-watch": "onchange '**/*.ts' -- prettier --write {{changed}}",
+    "style-check": "prettier --check '**/*.ts'",
+    "style-format": "prettier --write '**/*.ts'",
     "lint": "eslint .",
     "test": "jest"
   },

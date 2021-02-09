@@ -1,5 +1,3 @@
-import TransportMessagingInterface from "../transportsInterface";
+import TransportMessagingInterface from '../transportsInterface'
 
-export default interface HTTPInterface extends TransportMessagingInterface {
-    
-}
+export default interface HTTPInterface extends TransportMessagingInterface {}
