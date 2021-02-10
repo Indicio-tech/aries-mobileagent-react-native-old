@@ -46,7 +46,7 @@ class AMARN implements AMARNInterface {
 
     //Validate Creation parameters
     AgentConfig.check(creationParameters)
-
+    
     //Perform creation
     try {
       await WalletService.createWallet(

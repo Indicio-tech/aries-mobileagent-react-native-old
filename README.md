@@ -41,7 +41,7 @@ AMA-RN plans to use the [Aries Protocols Test Suite (APTS)](https://github.com/h
 
 ## App Requirements
 
-AMA-RN currently is built on React Native 0.61.5. Newer versions of React Native expierience issues with ZMQ (Fatal Signal 6 (SIGABRT)). We are making efforts to be able to move to React Native 0.61.4.
+AMA-RN currently is built on React Native 0.61.5. Newer versions of React Native experience issues with ZMQ (Fatal Signal 6 (SIGABRT)). We are making efforts to be able to move to React Native 0.63.4.
 
 AMA-RN targets Android API 29.0.3, with plans to support API 30 soon. If you need to support Android 11 (API 30), you should add the following to your application tag in your AndroidManifest:
 ```

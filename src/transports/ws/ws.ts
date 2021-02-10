@@ -1,4 +1,3 @@
-import {DeviceEventEmitter} from 'react-native'
 var EventEmitter = require('events')
 import WSInterface from './wsInterface'
 

@@ -8,7 +8,7 @@ import {
   } from 'runtypes'
   import {MessageID} from '../baseMessage'
   
-  //Ping
+  //Message
   export const BasicMessage = Record({
     '@type': Union(
       Literal('https://didcomm.org/basicmessage/1.0/message'),
