@@ -108,9 +108,15 @@ Install peer dependencies of AMA-RN:
 npm install react-native-fs react-native-get-random-values
 ```
 
-Add the following to `allprojects` in your React Native app build.gradle:
+Add the maven repository to your `repositories` in `allprojects` in your React Native app build.gradle:
 ```
-maven { url 'https://repo.sovrin.org/repository/maven-public' }
+allprojects {
+    repositories {
+        ...
+
+        maven { url 'https://repo.sovrin.org/repository/maven-public' }
+    }
+}
 ```
 
 You should now be able to develop your app using AMA-RN locally.

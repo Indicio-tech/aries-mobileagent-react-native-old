@@ -6,7 +6,7 @@
   "main": "./src/index.ts",
   "types": "./build/index.d.ts",
   "scripts": {
-    "typescript-watch": "tsc --watch",
+    "typescript-watch": "npx tsc --watch",
     "style-watch": "onchange '**/*.ts' -- prettier --write {{changed}}",
     "style-check": "prettier --check '**/*.ts'",
     "style-format": "prettier --write '**/*.ts'",
