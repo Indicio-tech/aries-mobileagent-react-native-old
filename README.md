@@ -1,26 +1,30 @@
 # Aries Mobile Agent React Native (AMA-RN)
-Aries Mobile Agent React Native is an Aries Mobile Agent written to create an interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features. This project is intended to provide an accessible open source Aries agent within a React Native environment. Currently built for Android with iOS support in progress. 
+Aries Mobile Agent React Native is an open source Aries Mobile Agent written to create a programmatic interface for managing SSI credentials, mediation, governance frameworks, and other Aries protocols and features. This project is intended to provide an accessible open source Aries agent within a React Native environment. Currently built for Android with iOS support in progress. 
+
+[Aries Bifold](https://github.com/Indicio-tech/aries-bifold)] is a community driven open source mobile app project implementing this library.
 
 Note: This project was developed in parallel to [this project](https://github.com/animo/aries-mobile-agent-react-native) at Animo. We intend to work with the community to address project naming conventions as the number of projects increases within the Aries community. 
 
-### Coming Soon: Quick Start
-A part of this project is the development of a sample app that can be used as a reference for AMA-RN usage as well as UI best practices. 
-Head to the [AMARN-Sample-App repo](https://github.com/Indicio-tech/aries-mobileagent-react-native-sample-app) for instructions to get started running an agent quickly, including APKs to just walk through the app.
+### Quick Start - Aries Bifold (Name Under Consideration)
+AMA-RN is utilized in the Mobile App project [Aries Bifold](https://github.com/Indicio-tech/aries-bifold) and is a great quick start to the usage of AMA-RN, and a great place to focus contributions for UI and Apps.
 
-## Future Work / Roadmap
+## Future Work
+### rn-indy-sdk
+AMA-RN is being actively worked on to utilize [rn-indy-sdk](https://github.com/AbsaOSS/rn-indy-sdk) to help focus and centralize community efforts surrounding Indy SDK exposure to React Native.
 
+### Roadmap
 - [x] Modify and utilize [updated mediation capabilities](https://github.com/hyperledger/aries-rfcs/blob/master/features/0211-route-coordination/README.md) supported by ACA-Py (added v0.1.0).
 - [ ] Basic Message Protocol Handling 
     - [x] Basic Message Protocol Handler (added v0.1.0)
-    - [ ] Basic Message Service (estimated 2/16)
-- [ ] Invitation Generation (estimated 2/11).
+    - [ ] Basic Message Service (estimated 2/19)
+- [ ] Invitation Generation (estimated 2/19).
 - [ ] Identify Dependency Injection / Plugin strategy
     - [ ] Circular dependencies
-- [ ] Credential Issuance (estimated 2/12).
-- [ ] Credential Presentation (estimated 2/12).
+- [ ] Credential Issuance (estimated 2/19).
+- [ ] Credential Presentation (estimated 2/19).
 - [ ] Refactor AMA-RN indy-sdk usage (Utilize and support [rn-indy-sdk](https://github.com/AbsaOSS/rn-indy-sdk))
 - [ ] Add iOS support.
-- [ ] Contribute updates to bring React Native to version 0.63.x
+- [ ] Contribute updates to bring React Native to version 0.63.4
 - [ ] Access and consume machine readable governance frameworks.
 - [ ] Modify storage mechanisms.
     - [ ] Investigate Indy non_secrets database replacement
@@ -37,7 +41,7 @@ Head to the [AMARN-Sample-App repo](https://github.com/Indicio-tech/aries-mobile
     - [ ] Android Storage changes with Indy-SDK
 
 ### Testing Frameworks:
-AMA-RN plans to use the [Aries Protocols Test Suite (APTS)](https://github.com/hyperledger/aries-protocol-test-suite) and the [Aries Agent Test Harness (AATH)](https://github.com/hyperledger/aries-agent-test-harness) to test for Aries Agent compatibility and interoperability.
+AMA-RN presently, given community feedback, plans to use the [Aries Protocols Test Suite (APTS)](https://github.com/hyperledger/aries-protocol-test-suite) and the [Aries Agent Test Harness (AATH)](https://github.com/hyperledger/aries-agent-test-harness) to test for Aries Agent compatibility and interoperability.
 
 ## App Requirements
 
@@ -108,9 +112,15 @@ Install peer dependencies of AMA-RN:
 npm install react-native-fs react-native-get-random-values
 ```
 
-Add the following to `allprojects` in your React Native app build.gradle:
+Add the maven repository to your `repositories` in `allprojects` in your React Native app build.gradle:
 ```
-maven { url 'https://repo.sovrin.org/repository/maven-public' }
+allprojects {
+    repositories {
+        ...
+
+        maven { url 'https://repo.sovrin.org/repository/maven-public' }
+    }
+}
 ```
 
 You should now be able to develop your app using AMA-RN locally.
@@ -139,7 +149,7 @@ await AMARN.createAgent(
     },
     defaultMediatorConfig: {
         invite: "http://mediator2.test.indiciotech.io?c_i=eyJAdHlwZSI6ICJkaWQ6c292OkJ6Q2JzTlloTXJqSGlxWkRUVUFTSGc7c3BlYy9jb25uZWN0aW9ucy8xLjAvaW52aXRhdGlvbiIsICJAaWQiOiAiZjRhYmIxZTUtNzEwNS00ODg1LTk1MDEtMWI4YWI0YzQ4MDRiIiwgImxhYmVsIjogIkluZGljaW8gUHVibGljIE1lZGlhdG9yIiwgInJlY2lwaWVudEtleXMiOiBbIjdXY1FReFg3MmFNc2tHeXIzWGZKNmJhNXhnZDVlN20yUENhTEdIekV2ZzljIl0sICJzZXJ2aWNlRW5kcG9pbnQiOiAiaHR0cDovL21lZGlhdG9yMi50ZXN0LmluZGljaW90ZWNoLmlvIn0=",
-        mediatorID: "indicio-public-mediator
+        mediatorID: "indicio-public-mediator"
     },
 })
 
@@ -155,7 +165,7 @@ agent = await AMARN.loadAgent(
 
 #### Additional Documentation
 
-Additional documentation can be found in the [`docs folder`](https://github.com/Indicio-tech/aries-mobileagent-react-native/blob/main/docs/README.md)
+Additional documentation can be found in the [`docs folder`](./docs/README.md)
 
 ## Troubleshooting
 
@@ -192,4 +202,4 @@ npx react-native run-android
 
 ## License
 
-[Apache License Version 2.0](https://github.com/Indicio-tech/aries-mobileagent-react-native/blob/main/license)
+[Apache License Version 2.0](./LICENSE)
